@@ -4,12 +4,27 @@ import pyrogue.gui
 import PyQt4.QtGui
 from FpgaTopLevel import *
 import sys
+import argparse
+
+# Set the argument parser
+parser = argparse.ArgumentParser()
+
+# Add arguments
+parser.add_argument(
+    "--ip", 
+    type    = str,
+    required= True,
+    help    = "AMC Carrier IP address",
+)
+
+# Get the arguments
+args = parser.parse_args()
 
 # Set base
 AMCc = pr.Root(name='AMCc',description='')
 
 # Add device
-AMCc.add(FpgaTopLevel(ipAddr="10.0.3.106"))
+AMCc.add(FpgaTopLevel(ipAddr=args.ip"))
 AMCc.start()
 AMCc.readAll()
 

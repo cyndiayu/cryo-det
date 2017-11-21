@@ -39,12 +39,12 @@ Adrive = 12; % -6 dB
 
 %Qualify inputs
 if band <0 | band > 7 
-    display('band out of range (for now 0<=band<=7')
+    display('band out of range (for now  0 <= band <= 7')
     break
 end
 
 if min(f)<-19.2e6 | max(freqs)>19.2e6
-    display('frequency vector out of range')
+    display('frequencies must be in range +-19.2MHz')
     break
 end
 
@@ -54,18 +54,19 @@ lcaPut( [rootPath, 'rfEnable'], 1 ) %enable RF
 
 %loop over frequencies
 for j=1:length(freqs)
-    freqBits = round(2^24*f(j)/38.4e6));    %CHECK SCALING!!!
+    freqBits = round(2^24*freqs(j)/38.4e6));    %CHECK SCALING!!!
 
     % configCryoChannel( rootPath, subchan, frequency_mhz, amplitude, feedbackEnable, etaPhase, etaMag )
     configCryoChannel( rootPath, subchan, freqBits, Adrive, 0, 0, 0 )
     for nr = 1:Nread
-        %read I & Q
-        pause(dwell)
-        resp((j-1)*Nread + nr)  = 38.4e6/2^15*(lcaGet( [pvRoot, 'I']) + 1i*lcaGet( [pvRoot, 'Q'])); %CHECK SCALING!!!
+        %read I & Q, save response as complex vector
+        pause(dwell);
+        configCryoChannel( rootPath, subchan, freqBits, Adrive, 0, 0, 0 ); %write again to trigger status register update
+        resp((j-1)*Nread + nr) = (lcaGet( [pvRoot, 'I']) + 1i*lcaGet( [pvRoot, 'Q'])) / 2^15; %CHECK SCALING!!!
+        % are I&Q synchronous?        
+        f((j-1)*Nread + nr) = freqs(j); 
     end
 end
-
-
 
 
 % if we should want to check dF:

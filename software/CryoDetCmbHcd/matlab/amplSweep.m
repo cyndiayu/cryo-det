@@ -39,7 +39,7 @@ Adrive = 12; % -6 dB
 Adrive = 15; %  full scale
 
 %Qualify inputs
-if band <0 | band > 7 
+if band <0 | band > 31 
     display('band out of range (for now  0 <= band <= 7')
     return
 end

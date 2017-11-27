@@ -60,4 +60,4 @@ function confgigCryoChannel( rootPath, channelNum, frequency_mhz, amplitude, fee
     
     lcaPut( [pvRoot, 'etaPhase'], floor(phase*2^15) );
     
-    lcaPut( [pvRoot, 'etaMag'], (etaMag*2^10) );
+    lcaPut( [pvRoot, 'etaMag'], floor(etaMag*2^10) );

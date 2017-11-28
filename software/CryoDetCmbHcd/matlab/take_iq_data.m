@@ -1,10 +1,10 @@
-clear;
-close all
+%clear;
+%close all
 
 %%
 global DMBufferSizePV
 
-close all
+%close all
 data_length=2^19;
 compare_length=2^14;
 N=data_length;

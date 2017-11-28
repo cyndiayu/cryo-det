@@ -9,7 +9,7 @@
 %
 
 
-function confgigCryoChannel( rootPath, channelNum, frequency_mhz, amplitude, feedbackEnable, etaPhase, etaMag )
+function configCryoChannel( rootPath, channelNum, frequency_mhz, amplitude, feedbackEnable, etaPhase, etaMag )
     pvRoot = [rootPath, 'CryoChannels:CryoChannel[', num2str(channelNum), ']:'];
     
     
@@ -19,8 +19,8 @@ function confgigCryoChannel( rootPath, channelNum, frequency_mhz, amplitude, fee
     
     % limit frequency to +/- sub-band/2
     if frequency_mhz > sub_band/2
-        freq = sub_band/2;
-    elseif frequency_mhz < -sub_band/2
+        freq = sub_band/2;    
+    elseif frequency_mhz < -sub_band/2config
         freq = -sub_band/2;
     else
         freq = frequency_mhz;

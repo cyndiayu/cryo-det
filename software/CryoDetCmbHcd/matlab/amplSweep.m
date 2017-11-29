@@ -1,4 +1,4 @@
-function [resp, f] = amplSweep(band, freqs, Nread, dwell, GUIbug)
+function [resp, f] = amplSweep(band, freqs, Nread, dwell)
 % Sweep frequency, plot amplitude and phase
 % band selects one of 32 sub bands (only 0:7 presently allowed)
 % freqs is a vector of frequencies in the range -19.2 (MHz) to + 19.2 (MHz)
@@ -21,11 +21,8 @@ if nargin <4
     dwell = 0.001; %dwell time default is 1 ms
 end; 
 
-if nargin<5
-    GUIbug = false;
-end
-
 resp = zeros(1, Nread*length(freqs)); %allocate response vector
+f = zeros(1, Nread*length(freqs));
 
 % up to 16 tones are summed/sub-band
 % toneScale selects the scaling after summing 16 channels - global setting
@@ -66,13 +63,6 @@ for j=1:length(freqs)
     pause(dwell);
     for nr = 1:Nread
         %read I & Q, save response as complex vector
-        if GUIbug
-            pause(.2);
-            readAll;
-        else
-%            configCryoChannel( rootPath, subchan, freqs(j), Adrive, 0, 0, 0 ); %write again to trigger status register update
- %           pause(dwell);
-        end
         resp((j-1)*Nread + nr) = (lcaGet( [rootPath, 'I']) + 1i*lcaGet( [rootPath, 'Q'])) / 2^15; %CHECK SCALING!!!
         % are I&Q synchronous?        
         f((j-1)*Nread + nr) = freqs(j); 

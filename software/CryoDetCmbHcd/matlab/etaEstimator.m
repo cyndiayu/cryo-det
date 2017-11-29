@@ -32,7 +32,7 @@ Nf = length(f);
 latency = (netPhase(Nf)-netPhase(1))/(f(Nf)-f(1))/2/pi
 
 %complex Response Plot
-figure(4)
+figure(3)
 plot(resp, '.');grid, hold on
 a = abs(resp); idx = find(a==min(a),1), plot(resp(idx),'*r')
 F0 = f(idx) %center frequency in MHz
@@ -46,12 +46,12 @@ hold off
 
 %estimate eta
 eta = (f(right)-f(left))/(resp(right)-resp(left))
-etaMag = abs(eta)
+etaMag = abs(eta)   %magnitude in MHz per unit response
 etaPhase = angle(eta)
 etaPhaseDeg = angle(eta)*180/pi
-etaScaled = etaMag/38.4
+etaScaled = etaMag/19.2
 
-figure(5), grid
+figure(4), grid
 plot(resp*eta, '.'),grid, hold on
 plot(eta*resp(idx),'r*')
 plot(eta*resp(right), 'g+')
@@ -84,7 +84,7 @@ if nargin <3
 end; 
 
 if nargin <4 
-    dwell = 0.001; %dwell time default is 1 ms
+    dwell = 0.002; %dwell time default is 1 ms
 end; 
 
 
@@ -139,13 +139,13 @@ for j=1:length(freqs)
         %read dF, save response as complex vector
 
  %       configCryoChannel( rootPath, subchan, freqs(j), Adrive, 0, etaPhase, etaMag ); %write again to trigger status register update
-      pause(0.001);
+      pause(0.002);
 
         dFword = lcaGet([chanPVprefix, 'frequencyError']); %get real part
-        if dFword>2^23
+        if dFword >= 2^23
             dFword = dFword-2^24;   %treat as signed 24 bit
         end
-        respI((j-1)*Nread + nr) = dFword; %get real part
+        respI((j-1)*Nread + nr) = dFword/2^23; %get real part
 
         f((j-1)*Nread + nr) = freqs(j); 
     end
@@ -158,17 +158,18 @@ for j=1:length(freqs)
     pause(dwell);
     
     for nr = 1:Nread
-        pause(0.001);
+        pause(0.002);
         dFword = lcaGet([chanPVprefix, 'frequencyError']); %get real part
-        if dFword>2^23
+        if dFword >= 2^23
             dFword = dFword-2^24;   %treat as signed 24 bit
         end
-        respQ((j-1)*Nread + nr) = dFword; %get imaginary part
+        respQ((j-1)*Nread + nr) = dFword/2^23; %get imaginary part
     end
 end
 
 resp = respI + 1i*respQ;    %form complex response
 
-Adrive = 3; %turn down to low amplitude
+%Adrive = 1; %turn down to very low amplitude
+Adrive = 0; % turn channel OFF
 configCryoChannel( rootPath, subchan, freqs(j), Adrive, 0, 0, 0 ) ;
 end

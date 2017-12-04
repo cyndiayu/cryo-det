@@ -5,7 +5,7 @@
 % [data] = readAdcData( rootPath, adcNumber, dataLength )
 %    rootPath       - sysgen root path
 %    adcNumber      - ADC number 0...3
-%    dataLength     - length of acqusition
+%    dataLength     - length of acquisition
 
 function [data] = readAdcData( rootPath, adcNumber, varargin )
     global DMBufferSizePV

@@ -1,8 +1,8 @@
-% [data] = readbackCryoChannel( rootPath, adcNumber )
+% [data] = readAdcData( rootPath, adcNumber )
 %    rootPath       - sysgen root path
 %    adcNumber      - ADC number 0...3
 %
-% [data] = readbackCryoChannel( rootPath, adcNumber, dataLength )
+% [data] = readAdcData( rootPath, adcNumber, dataLength )
 %    rootPath       - sysgen root path
 %    adcNumber      - ADC number 0...3
 %    dataLength     - length of acqusition

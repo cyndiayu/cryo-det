@@ -1,6 +1,8 @@
 % clear;
 close all
 
+Fadc = 614.4e6;
+
 rootPath = 'mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:Base[0]:';
 
 lcaPut( [rootPath, 'rfEnable'], 0 )
@@ -38,3 +40,14 @@ lcaPut( [rootPath, 'rfEnable'], 1 )
 
 % [loopFilterOutput, frequencyError] = readbackCryoChannel( rootPath, channelNum )
 [a, b] = readbackCryoChannel( rootPath, 0 )
+
+adcData = readAdcData( rootPath, 0 );
+dacData = readDacData( rootPath, 0 );
+
+figure
+pwelch(adcData, [], [], [], Fadc, 'centered')
+title('ADC data PSD')
+
+figure
+pwelch(dacData, [], [], [], Fadc, 'centered')
+title('DAC data PSD')

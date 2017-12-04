@@ -5,6 +5,8 @@ Fadc = 614.4e6;
 
 rootPath = 'mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:Base[0]:';
 
+readFpgaStatus( rootPath )
+
 lcaPut( [rootPath, 'rfEnable'], 0 )
 lcaPut( [rootPath, 'waveformSelect'], 0 )
 lcaPut( [rootPath, 'waveformStart'], 0 )

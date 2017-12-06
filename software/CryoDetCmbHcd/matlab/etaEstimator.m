@@ -6,9 +6,9 @@ function [eta, F0, latency, resp, f] = etaEstimator(band, freqs)
 
 %SSmith 22 Nov 2017
 
-Nread = 5       %normally run with Nread>=4
-dwell = 0.010
-delF = 0.5
+Nread = 3   ;    %normally run with Nread>=4
+dwell = 0.025;
+delF = 0.03;
 
 eta = 0;
 F0 = 0; 
@@ -29,7 +29,7 @@ title(['Phase Response for Band ' num2str(band)])
 xlabel('Frequency (MHz)')
 ylabel('Phase')
 Nf = length(f);
-latency = (netPhase(Nf)-netPhase(1))/(f(Nf)-f(1))/2/pi
+latency = (netPhase(Nf)-netPhase(1))/(f(Nf)-f(1))/2/pi;
 
 %complex Response Plot
 figure(3)
@@ -46,8 +46,8 @@ hold off
 
 %estimate eta
 eta = (f(right)-f(left))/(resp(right)-resp(left))
-etaMag = abs(eta)   %magnitude in MHz per unit response
-etaPhase = angle(eta)
+etaMag = abs(eta);   %magnitude in MHz per unit response
+etaPhase = angle(eta);
 etaPhaseDeg = angle(eta)*180/pi
 etaScaled = etaMag/19.2
 
@@ -80,7 +80,7 @@ function [resp, f] = etaScan(band, freqs, Nread, dwell)
 rootPath = 'mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:Base[0]:';
 
 if nargin <3 
-    Nread = 4; % default number of reads per frequnecy setting
+    Nread = 2; % default number of reads per frequnecy setting
 end; 
 
 if nargin <4 
@@ -97,13 +97,14 @@ respQ = respI;
 %   1 is scaled by 1/4
 %   2 is scaled by 1/2
 %   3 is scaled by 1    (used for outputting single tone/sub-band)
-lcaPut( [rootPath, 'toneScale'], 3 )  % full amplitude in a single tone
+%lcaPut( [rootPath, 'toneScale'], 3 )  % full amplitude in a single tone
 
 % global feedback enable
 lcaPut( [rootPath, 'feedbackEnable'], 0 ) %Disable FB
+pause(dwell)
 
 % choose drive amplitude
-Adrive = 12; % -6 dB
+Adrive = 14; % -6 dB
 %Adrive = 15; %  full scale
 
 %Qualify inputs
@@ -120,6 +121,7 @@ end
 subchan = 16*band; % use channel 0 of this band
 
 lcaPut( [rootPath, 'rfEnable'], 1 ) %enable RF
+pause(dwell)
 lcaPut( [rootPath, 'statusChannelSelect'], subchan)   %set monitor channel to this channel
 chanPVprefix = [rootPath, 'CryoChannels:CryoChannel[', num2str(subchan), ']:']
   %      dfword = lcaGet( [rootPath, 'CryoChannels:CryoChannel[0]:', 'frequencyError'])/2^24*38.4 ;

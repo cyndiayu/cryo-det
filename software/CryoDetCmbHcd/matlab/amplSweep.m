@@ -22,7 +22,6 @@ if nargin <4
 end; 
 
 resp = zeros(1, Nread*length(freqs)); %allocate response vector
-f = zeros(1, Nread*length(freqs));
 
 % up to 16 tones are summed/sub-band
 % toneScale selects the scaling after summing 16 channels - global setting
@@ -30,17 +29,17 @@ f = zeros(1, Nread*length(freqs));
 %   1 is scaled by 1/4
 %   2 is scaled by 1/2
 %   3 is scaled by 1    (used for outputting single tone/sub-band)
-lcaPut( [rootPath, 'toneScale'], 3 )  % full amplitude in a single tone
+lcaPut( [rootPath, 'toneScale'], 2 )  % half of full scale amplitude in a single tone
 
 % global feedback enable
 lcaPut( [rootPath, 'feedbackEnable'], 0 ) %Disable FB
 
 % choose drive amplitude
-Adrive = 12; % -6 dB
-Adrive = 15; %  full scale
+ Adrive = 13; % -6 dB
+%Adrive = 15; %  full scale
 
 %Qualify inputs
-if band <0 | band > 7 
+if band <0 | band > 31 
     display('band out of range (for now  0 <= band <= 7')
     return
 end
@@ -54,7 +53,6 @@ subchan = 16*band; % use channel 0 of this band
 
 lcaPut( [rootPath, 'rfEnable'], 1 ) %enable RF
 lcaPut( [rootPath, 'statusChannelSelect'], subchan)   %set monitor channel to this channel
-pause(dwell)
 
 %loop over frequencies
 for j=1:length(freqs)
@@ -63,12 +61,14 @@ for j=1:length(freqs)
     pause(dwell);
     for nr = 1:Nread
         %read I & Q, save response as complex vector
+%         configCryoChannel( rootPath, subchan, freqs(j), Adrive, 0, 0, 0 ); %write again to trigger status register update
+%         pause(dwell);
         resp((j-1)*Nread + nr) = (lcaGet( [rootPath, 'I']) + 1i*lcaGet( [rootPath, 'Q'])) / 2^15; %CHECK SCALING!!!
         % are I&Q synchronous?        
         f((j-1)*Nread + nr) = freqs(j); 
     end
 end
-    Adrive = 1; %turn down to very low amplitude
+    Adrive = 0; %turn down to very low amplitude
     configCryoChannel( rootPath, subchan, freqs(j), Adrive, 0, 0, 0 )
 
 % if we should want to check dF:

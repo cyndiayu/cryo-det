@@ -16,11 +16,12 @@ Ffirst = ch0idx(1)
 Flast = ch0idx(length(ch0idx))-1
 freqs = data(Ffirst:Flast,1);
 neg = find(freqs >= 2^23);
+F = double(freqs);
 if ~isempty(neg)
-    freqs(neg) = freqs(neg)-2^24;
+    F(neg) = F(neg)-2^24;
 end
-freqs = reshape(freqs,512,[]) * 19.2/2^24;
-F = freqs';
+F = reshape(F,512,[]) * 19.2/2^24;
+F = F';
 
 %decode frequency errors 
 % UNTESTED until fixed data stream tested
@@ -30,11 +31,12 @@ if ~isempty(ch0idx)
     Dlast = ch0idx(length(ch0idx))-1
     df = data(Dfirst:Dlast,2);
     neg = find(df >= 2^23);
+    dF = double(df);
     if ~isempty(neg)
-        df(neg) = df(neg)-2^24;
+        dF(neg) = dF(neg)-2^24;
     end
-    df = reshape(df,512,[]) * 19.2/2^24;
-    dF = df';
+    dF = reshape(dF,512,[]) * 19.2/2^24;
+    dF = dF';
 else
     dF = []
 end

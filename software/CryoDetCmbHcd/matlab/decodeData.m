@@ -20,8 +20,14 @@ F = double(freqs);
 if ~isempty(neg)
     F(neg) = F(neg)-2^24;
 end
-F = reshape(F,512,[]) * 19.2/2^24;
-F = F';
+
+if mod(length(F),512)~=0
+    Npoints = length(F)/512  % bug??
+    F = []
+else
+    F = reshape(F,512,[]) * 19.2/2^23;
+    F = F';
+end
 
 %decode frequency errors 
 % UNTESTED until fixed data stream tested
@@ -35,8 +41,15 @@ if ~isempty(ch0idx)
     if ~isempty(neg)
         dF(neg) = dF(neg)-2^24;
     end
-    dF = reshape(dF,512,[]) * 19.2/2^24;
-    dF = dF';
+
+    if mod(length(dF),512)~=0
+        Npoints = length(dF)/512  % bug??
+        dF = []
+    else
+        dF = reshape(dF,512,[]) * 19.2/2^23;
+        dF = dF';
+    end
+
 else
     dF = []
 end

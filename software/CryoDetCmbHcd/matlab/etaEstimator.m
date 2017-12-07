@@ -104,7 +104,7 @@ lcaPut( [rootPath, 'feedbackEnable'], 0 ) %Disable FB
 pause(dwell)
 
 % choose drive amplitude
-Adrive = 14; % -6 dB
+Adrive = 12; % -6 dB
 %Adrive = 15; %  full scale
 
 %Qualify inputs

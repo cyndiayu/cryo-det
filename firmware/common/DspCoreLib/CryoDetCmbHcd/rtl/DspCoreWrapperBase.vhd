@@ -2,7 +2,7 @@
 -- File       : DspCoreWrapperBase.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -- Created    : 2017-06-28
--- Last update: 2017-12-01
+-- Last update: 2017-12-08
 -------------------------------------------------------------------------------
 -- Description:
 -------------------------------------------------------------------------------
@@ -34,6 +34,8 @@ entity DspCoreWrapperBase is
       -- JESD Clocks and resets   
       jesdClk         : in  sl;
       jesdRst         : in  sl;
+      jesdClk2x       : in  sl;
+      jesdRst2x       : in  sl;
       -- ADC/DAC/Debug Interface (jesdClk domain)
       adc             : in  Slv32Array(1 downto 0);
       dac             : out Slv32Array(1 downto 0);

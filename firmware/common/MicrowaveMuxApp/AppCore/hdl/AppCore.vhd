@@ -278,6 +278,8 @@ begin
          -- JESD Clocks and resets   
          jesdClk         => jesdClk,
          jesdRst         => jesdRst,
+         jesdClk2x       => jesdClk2x,
+         jesdRst2x       => jesdRst2x,
          -- ADC/DAC/Debug Interface (jesdClk[1:0] domain)
          adcValids       => adcValids,
          adcValues       => adcValues,

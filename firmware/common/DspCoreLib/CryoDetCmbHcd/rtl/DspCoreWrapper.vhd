@@ -2,7 +2,7 @@
 -- File       : DspCoreWrapper.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -- Created    : 2017-06-28
--- Last update: 2017-12-06
+-- Last update: 2017-12-08
 -------------------------------------------------------------------------------
 -- Description:
 -------------------------------------------------------------------------------
@@ -35,6 +35,8 @@ entity DspCoreWrapper is
       -- JESD Clocks and resets   
       jesdClk         : in  slv(1 downto 0);
       jesdRst         : in  slv(1 downto 0);
+      jesdClk2x       : in  slv(1 downto 0);
+      jesdRst2x       : in  slv(1 downto 0);
       -- ADC/DAC/Debug Interface (jesdClk[1:0] domain)
       adcValids       : in  Slv10Array(1 downto 0);
       adcValues       : in  sampleDataVectorArray(1 downto 0, 9 downto 0);
@@ -83,6 +85,8 @@ architecture mapping of DspCoreWrapper is
 
    signal jesdClkVec      : slv(7 downto 0) := (others => '0');
    signal jesdRstVec      : slv(7 downto 0) := (others => '0');
+   signal jesdClk2xVec    : slv(7 downto 0) := (others => '0');
+   signal jesdRst2xVec    : slv(7 downto 0) := (others => '0');
    signal sigGenStart     : slv(7 downto 0) := (others => '0');
    signal sigGenStartSync : slv(7 downto 0) := (others => '0');
 
@@ -130,6 +134,12 @@ begin
 
       jesdClkVec(i+4) <= jesdClk(1);
       jesdRstVec(i+4) <= jesdRst(1);
+
+      jesdClk2xVec(i) <= jesdClk2x(0);
+      jesdRst2xVec(i) <= jesdRst2x(0);
+
+      jesdClk2xVec(i+4) <= jesdClk2x(1);
+      jesdRst2xVec(i+4) <= jesdRst2x(1);
 
       sigGen(0+(2*i)) <= dacSigValues(0, 0);
       sigGen(1+(2*i)) <= dacSigValues(0, 1);
@@ -241,6 +251,8 @@ begin
                -- JESD Clocks and resets   
                jesdClk         => jesdClkVec(i),
                jesdRst         => jesdRstVec(i),
+               jesdClk2x       => jesdClk2xVec(i),
+               jesdRst2x       => jesdRst2xVec(i),
                -- ADC/DAC/Debug Interface (jesdClk domain)
                adc(0)          => adc((2*i)+0),
                adc(1)          => adc((2*i)+1),

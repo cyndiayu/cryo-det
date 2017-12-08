@@ -34,6 +34,8 @@ entity DspCoreWrapper is
       -- JESD Clocks and resets   
       jesdClk         : in  slv(1 downto 0);
       jesdRst         : in  slv(1 downto 0);
+      jesdClk2x       : in  slv(1 downto 0);
+      jesdRst2x       : in  slv(1 downto 0); 
       -- ADC/DAC/Debug Interface (jesdClk[1:0] domain)
       adcValids       : in  Slv10Array(1 downto 0);
       adcValues       : in  sampleDataVectorArray(1 downto 0, 9 downto 0);

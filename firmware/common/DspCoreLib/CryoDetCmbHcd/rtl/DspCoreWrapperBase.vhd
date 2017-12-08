@@ -145,9 +145,42 @@ architecture mapping of DspCoreWrapperBase is
    signal ramDin  : Slv32Array(15 downto 0) := (others => (others => '0'));
    signal ramDout : Slv32Array(15 downto 0) := (others => (others => '0'));
 
+   signal adcSync : Slv16Array(1 downto 0) := (others => (others => '0'));
+   signal dacSync : Slv16Array(1 downto 0) := (others => (others => '0'));
+
 begin
 
    axilRstL <= not(axilRst);
+
+   GEN_2X_CLK : for i in 1 downto 0 generate
+
+      U_ADC : entity work.Jesd32bTo16b
+         generic map (
+            TPD_G => TPD_G)
+         port map (
+            wrClk    => jesdClk,
+            wrRst    => jesdRst,
+            validIn  => '1',
+            dataIn   => adc(i),
+            rdClk    => jesdClk2x,
+            rdRst    => jesdRst2x,
+            validOut => open,
+            dataOut  => adcSync(i));
+
+      U_DAC : entity work.Jesd16bTo32b
+         generic map (
+            TPD_G => TPD_G)
+         port map (
+            wrClk    => jesdClk2x,
+            wrRst    => jesdRst2x,
+            validIn  => '1',
+            dataIn   => dacSync(i),
+            rdClk    => jesdClk,
+            rdRst    => jesdRst,
+            validOut => open,
+            dataOut  => dac(i));
+
+   end generate GEN_2X_CLK;
 
    ---------------------
    -- AXI-Lite Crossbar
@@ -177,14 +210,15 @@ begin
    U_SysGen : dspcore
       port map (
          -- Clock and Reset
+         dsp2x_clk                  => jesdClk2x,
          dsp_clk                    => jesdClk,
          rst(0)                     => jesdRst,
-         -- ADCs Ports (dsp_clk domain)
-         adc0                       => adc(0),
-         adc1                       => adc(1),
-         -- DAC Ports (dsp_clk domain)
-         dac0                       => dac(0),
-         dac1                       => dac(1),
+         -- ADCs Ports (dsp2x_clk domain)
+         adc0                       => adcSync(0),
+         adc1                       => adcSync(1),
+         -- DAC Ports (dsp2x_clk domain)
+         dac0                       => dacSync(0),
+         dac1                       => dacSync(1),
          -- RAM Ready Only Ports (dsp_clk domain)
          rddata0                    => ramDout(0),
          rddata1                    => ramDout(1),
@@ -252,7 +286,7 @@ begin
          dsp_axi_lite_s_axi_rresp   => axilReadSlaves(0).rresp,
          dsp_axi_lite_s_axi_rvalid  => axilReadSlaves(0).rvalid);
 
-   --------------------------------          
+   --------------------------------
    -- AXI-Lite Shared Memory Module
    --------------------------------
    U_Mem : entity work.DspCoreWrapperBram

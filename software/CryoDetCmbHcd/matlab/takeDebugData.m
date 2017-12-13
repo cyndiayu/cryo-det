@@ -57,13 +57,24 @@ function takeDebugData( rootPath, fileName, varargin )
 
     % how long to pause?
     
-    pause(10)
-    % should we monitor buffer status instead?
-%     lcaGet([root,':AMCc:FpgaTopLevel:AmcCarrierCore:AmcCarrierBsa:BsaWaveformEngine[0]:WaveformEngineBuffers:Empty[0]'])
-%     lcaGet([root,':AMCc:FpgaTopLevel:AmcCarrierCore:AmcCarrierBsa:BsaWaveformEngine[0]:WaveformEngineBuffers:Empty[1]'])
-%     lcaGet([root,':AMCc:FpgaTopLevel:AmcCarrierCore:AmcCarrierBsa:BsaWaveformEngine[0]:WaveformEngineBuffers:Empty[2]'])
-%     lcaGet([root,':AMCc:FpgaTopLevel:AmcCarrierCore:AmcCarrierBsa:BsaWaveformEngine[0]:WaveformEngineBuffers:Empty[3]'])
-    
+%   Here we do a brief pause then monitor waveform engine done status
+    done = 0;
+    pause(1)
+    while done == 0
+        done = 1;
+        for j = 0:3
+            empty = lcaGet([root,':AMCc:FpgaTopLevel:AmcCarrierCore:AmcCarrierBsa:BsaWaveformEngine[0]:WaveformEngineBuffers:Empty[', num2str(j), ']']);
+            if empty == 0
+                done = 0;
+            end   
+        end
+       pause(1) 
+       % TODO add percent complete for large datasets..
+       fprintf('%s','%');
+    end
+    disp(' ') % newline
+
+
     disp('Closing file...')
     lcaPut([root, ':AMCc:streamDataWriter:open'], 'False')
     

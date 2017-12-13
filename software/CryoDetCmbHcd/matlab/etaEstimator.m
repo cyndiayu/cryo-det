@@ -2,13 +2,13 @@ function [eta, F0, latency, resp, f] = etaEstimator(band, freqs)
 %sweep frequencies in a band,
 % aquire complex repsonse vs frequency at dF block where eta is used
 % fit to dF/dS21 to estimate eta
-%must scan twice, once to get real part, once to get imag part
+% must scan twice, once to get real part, once to get imag part
 
 %SSmith 22 Nov 2017
 
-Nread = 3   ;    %normally run with Nread>=4
-dwell = 0.025;
-delF = 0.03;
+Nread = 2   ;    %normally run with Nread>=4
+dwell = 0.03;
+delF = 0.05;
 
 eta = 0;
 F0 = 0; 
@@ -16,24 +16,29 @@ latency = 0;
 
 [resp, f] = etaScan(band, freqs, Nread, dwell);
 
-figure(1); plot(f, abs(resp), '.');grid
+%figure(1);
+%assume higher level code has established a figure or we create a new one
+subplot(2,2,1)
+plot(f, abs(resp), '.');grid
 title(['Amplitude Response for Band ' num2str(band)])
 xlabel('Frequency (MHz)')
 ylabel('Response (arbs)')
-ax=axis; xt=ax(1)+0.1*(ax(2)-ax(1)); yt=ax(3) + 0.1*(ax(4)-ax(3));
-text(xt,yt,['Band Center = ', num2str(band*38.4), ' MHz'])
-
+ax = axis; xt = ax(1)+0.1*(ax(2)-ax(1)); 
+yt=  ax(3) + 0.1*(ax(4)-ax(3));
+text(xt, yt,['Band Center = ', num2str(band*38.4), ' MHz'])
+ 
 netPhase = unwrap(angle(resp));
-figure(2); plot(f, netPhase, '.');grid
+%figure(2); 
+subplot(2,2,2), plot(f, netPhase, '.');grid
 title(['Phase Response for Band ' num2str(band)])
 xlabel('Frequency (MHz)')
 ylabel('Phase')
 Nf = length(f);
-latency = (netPhase(Nf)-netPhase(1))/(f(Nf)-f(1))/2/pi;
+latency = (netPhase(Nf)-netPhase(1))/(f(Nf)-f(1))/2/pi
 
 %complex Response Plot
-figure(3)
-plot(resp, '.');grid, hold on
+%figure(3)
+subplot(2,2,3), plot(resp, '.');grid, hold on
 a = abs(resp); idx = find(a==min(a),1), plot(resp(idx),'*r')
 F0 = f(idx) %center frequency in MHz
 left = find(f>F0-delF,1); f(left)
@@ -51,12 +56,12 @@ etaPhase = angle(eta);
 etaPhaseDeg = angle(eta)*180/pi
 etaScaled = etaMag/19.2
 
-figure(4), grid
-plot(resp*eta, '.'),grid, hold on
+%figure(4)
+subplot(2,2,4), plot(resp*eta, '.'), grid, hold on
 plot(eta*resp(idx),'r*')
 plot(eta*resp(right), 'g+')
 plot(eta*resp(left), 'gx')
-hold off
+
 end                      % end of function etaEstimator
 
 

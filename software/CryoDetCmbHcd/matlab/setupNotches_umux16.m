@@ -12,12 +12,13 @@ resonatorsOld = [4.9980, 5.0003, 5.0055, 5.0106, 5.0165, 5.0219, 5.0283,...
     5.4284, 5.4383, 5.4461]*1e3;
 
 %working from testAmplSweep 4Dec2017
-resonators = 5250 + [-1.3, 0.5, 4.1, 8.9, 14.8, 20.2, 34, 40, 45.6, 50.1, 55.4, 61.3,...
+resonators = 5250 + [-1.3, 0.5, 4.1,  14.8, 19.9, 34, 40, 45.6, 50.1, 55.4, 61.3,...
     67.4, 76, 81.2, 112, 116, 121, 127, 133, 140.3, 146.5, 152.5, ...
-    158, 162.2, 168, 174, 177.5,  187.6, 195.3, -138.3, -128, -133.2, -138.3, -142.5  ];
+    158, 162.2, 168, 174, 177.5,  187.6, 195.3]
+%, -138.3, -128, -133.2, -138.3, -142.5  ];
 
-resonators = 5250 + [-1.3, 0.5, 4.1, 14.8, 20.2, 34, 40, 45.6, 55.4, 61.3];  %bands 0, 16, 2
-
+%resonators = 5250 + [-1.3, 0.5, 4.1, 14.8, 19.9, 34, 40, 45.6, 55.4, 61.3];  %bands 0, 16, 2
+%resonators = 5250 + [67.4 127 133 140.33 168];  
 
 Off
 
@@ -26,8 +27,9 @@ bandchans = zeros(32,1);
 
 for ii =1:length(resonators)
     res = resonators(ii);
-    Fwrt5250 = res - 5250
-    
+    display(' ')
+    display('_________________________________________________')
+    display(['Calibrate line at RF = ' num2str(res) ' MHz  IF = ' num2str(res - 5250 + 750) ' Mhz'])
     [band, Foff] = f2band(res)    ;
     band
     Foff
@@ -38,7 +40,13 @@ for ii =1:length(resonators)
     offset(ii) = Foff;
 
     try
+        figure(ii)
         [eta, F0, latency, resp, f] = etaEstimator(band, [(offset(ii) - .3):0.01:(offset(ii) + 0.3)]);
+        hold on; subplot(2,2,4);
+        ax = axis; xt = ax(1) + 0.1*(ax(2)-ax(1)); 
+        yt = ax(4) - 0.1*(ax(4)-ax(3));
+        text(xt, yt, ['Line @ ', num2str(res), ' MHz    (' num2str(res - 5250) ' wrt band center'])
+        hold off;
         etaPhaseDeg(ii) = angle(eta)*180/pi;
         etaScaled(ii) =abs(eta)/19.2;
     catch
@@ -50,7 +58,7 @@ for ii =1:length(resonators)
 end
 
 for ii=1:length(resonators)
-    configCryoChannel(rootPath, chan(ii), offset(ii), 11, 1, etaPhaseDeg(ii), etaScaled(ii));
+    configCryoChannel(rootPath, chan(ii), offset(ii), 12, 1, etaPhaseDeg(ii), etaScaled(ii));
 end
     
     

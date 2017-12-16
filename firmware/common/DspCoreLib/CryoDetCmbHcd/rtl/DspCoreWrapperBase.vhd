@@ -2,7 +2,7 @@
 -- File       : DspCoreWrapperBase.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -- Created    : 2017-06-28
--- Last update: 2017-12-08
+-- Last update: 2017-12-15
 -------------------------------------------------------------------------------
 -- Description:
 -------------------------------------------------------------------------------
@@ -61,8 +61,7 @@ architecture mapping of DspCoreWrapperBase is
 
    component dspcore
       port (
-         adc0                       : in  std_logic_vector (31 downto 0);
-         adc1                       : in  std_logic_vector (31 downto 0);
+         rampcnt                    : in  std_logic_vector (31 downto 0);
          rddata0                    : in  std_logic_vector (31 downto 0);
          rddata1                    : in  std_logic_vector (31 downto 0);
          rddata2                    : in  std_logic_vector (31 downto 0);
@@ -72,11 +71,15 @@ architecture mapping of DspCoreWrapperBase is
          rddata6                    : in  std_logic_vector (31 downto 0);
          rddata7                    : in  std_logic_vector (31 downto 0);
          rst                        : in  std_logic_vector (0 to 0);
+         selectramp                 : in  std_logic_vector (0 to 0);
          siggen0                    : in  std_logic_vector (31 downto 0);
          siggen1                    : in  std_logic_vector (31 downto 0);
-         rampCnt                    : in  std_logic_vector (31 downto 0);
-         dsp_axi_lite_clk           : in  std_logic;
+         startramp                  : in  std_logic_vector (0 to 0);
+         adc0                       : in  std_logic_vector (15 downto 0);
+         adc1                       : in  std_logic_vector (15 downto 0);
          dsp_clk                    : in  std_logic;
+         dsp2x_clk                  : in  std_logic;
+         dsp_axi_lite_clk           : in  std_logic;
          dsp_axi_lite_aresetn       : in  std_logic;
          dsp_axi_lite_s_axi_awaddr  : in  std_logic_vector (11 downto 0);
          dsp_axi_lite_s_axi_awvalid : in  std_logic;
@@ -87,10 +90,9 @@ architecture mapping of DspCoreWrapperBase is
          dsp_axi_lite_s_axi_araddr  : in  std_logic_vector (11 downto 0);
          dsp_axi_lite_s_axi_arvalid : in  std_logic;
          dsp_axi_lite_s_axi_rready  : in  std_logic;
-         dac0                       : out std_logic_vector (31 downto 0);
-         dac1                       : out std_logic_vector (31 downto 0);
          debug0                     : out std_logic_vector (31 downto 0);
          debug1                     : out std_logic_vector (31 downto 0);
+         debugvalids                : out std_logic_vector (1 downto 0);
          rdaddr0                    : out std_logic_vector (6 downto 0);
          rdaddr1                    : out std_logic_vector (6 downto 0);
          rdaddr2                    : out std_logic_vector (6 downto 0);
@@ -99,9 +101,7 @@ architecture mapping of DspCoreWrapperBase is
          rdaddr5                    : out std_logic_vector (6 downto 0);
          rdaddr6                    : out std_logic_vector (6 downto 0);
          rdaddr7                    : out std_logic_vector (6 downto 0);
-         selectramp                 : in  std_logic_vector (0 to 0);
          siggenstart                : out std_logic_vector (0 to 0);
-         startramp                  : in  std_logic_vector (0 to 0);
          wraddr0                    : out std_logic_vector (6 downto 0);
          wraddr1                    : out std_logic_vector (6 downto 0);
          wraddr2                    : out std_logic_vector (6 downto 0);
@@ -118,7 +118,8 @@ architecture mapping of DspCoreWrapperBase is
          wrdata5                    : out std_logic_vector (31 downto 0);
          wrdata6                    : out std_logic_vector (31 downto 0);
          wrdata7                    : out std_logic_vector (31 downto 0);
-         debugvalids                : out std_logic_vector (1 downto 0);
+         dac0                       : out std_logic_vector (15 downto 0);
+         dac1                       : out std_logic_vector (15 downto 0);
          dsp_axi_lite_s_axi_awready : out std_logic;
          dsp_axi_lite_s_axi_wready  : out std_logic;
          dsp_axi_lite_s_axi_bresp   : out std_logic_vector (1 downto 0);

@@ -20,13 +20,13 @@ function configCryoChannel( rootPath, channelNum, frequency_mhz, amplitude, feed
     % limit frequency to +/- sub-band/2
     if frequency_mhz > sub_band/2
         freq = sub_band/2;    
-    elseif frequency_mhz < -sub_band/2config
+    elseif frequency_mhz < -sub_band/2
         freq = -sub_band/2;
     else
         freq = frequency_mhz;
     end
     
-    % frequency is written in unsiged number
+    % frequency is written in unsigned number
     if freq < 0
         freq = freq + sub_band;
     end

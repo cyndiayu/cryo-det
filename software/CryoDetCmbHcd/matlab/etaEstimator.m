@@ -6,8 +6,8 @@ function [eta, F0, latency, resp, f] = etaEstimator(band, freqs)
 
 %SSmith 22 Nov 2017
 
-Nread = 2   ;    %normally run with Nread>=4
-dwell = 0.03;
+Nread = 1   ;    %normally run with Nread>=4
+dwell = 0.07;
 delF = 0.05;
 
 eta = 0;
@@ -16,7 +16,7 @@ latency = 0;
 
 [resp, f] = etaScan(band, freqs, Nread, dwell);
 
-%figure(1);
+figure;
 %assume higher level code has established a figure or we create a new one
 subplot(2,2,1)
 plot(f, abs(resp), '.');grid

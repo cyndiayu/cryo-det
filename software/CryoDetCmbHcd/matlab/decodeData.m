@@ -42,6 +42,8 @@ else
     F = F';
 end
 
+fluxRampStrobeF = fluxRampStrobe(Ffirst:Flast, nF);
+
 %decode frequency errors 
 % UNTESTED until fixed data stream tested
 ch0idx = find(ch0Strobe(:,2) == 1);
@@ -66,3 +68,5 @@ if ~isempty(ch0idx)
 else
     dF = [];
 end
+
+fluxRampStrobeDF = fluxRampStrobe(Dfirst:Dlast, nDF);

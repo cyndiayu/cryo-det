@@ -12,15 +12,24 @@ resonatorsOld = [4.9980, 5.0003, 5.0055, 5.0106, 5.0165, 5.0219, 5.0283,...
     5.4284, 5.4383, 5.4461]*1e3;
 
 %working from testAmplSweep 4Dec2017
-resonators = 5250 + [-1.3, 0.5, 4.1,  14.8, 19.9, 34, 40, 45.6, 50.1, 55.4, 61.3,...
-    67.4, 76, 81.2, 112, 116, 121, 127, 133, 140.3, 146.5, 152.5, ...
-    158, 162.2, 168, 174, 177.5,  187.6, 195.3]
+resonators = 5250 + [-1.3, 0.5, 4.1, 8.5, 13.9, 19.1, 33.3, 39.7, 45.3, 49.6, 54.6, 60.2,...
+    67.4, 76, 81.2, 112, 116, 121, 127, 133, 140.3, 146.5, 152.1, ...
+    157.5, 161.6, 167.3, 174, 177.5,  187.6, 195.3]
 %, -138.3, -128, -133.2, -138.3, -142.5  ];
+% adapting frequencies to 15Dec2017
+
+resonators = 5250 + [ -1.3, 0.5, 4.1, 8.5, 13.9, 19.1, 33.25, 39.7, 45.3, 49.6, 54.6, 60.2,...  
+    66.2, 74.7, 80.7, 87.75, 108.6, 111.8, 115.6, 120.2, 126.5, 131.96, 139.6, 145.8,  ...
+        152.1, 157.5, 161.5, 166.6, 172.8, 176.2,  186.5, 195]
+
+%resonators = 5250 + [131.96, 139.6, 145.8, ...
+ %   157.5, 161.5, 166.6, 172.8, 176.,  187.3, 195]
 
 %resonators = 5250 + [-1.3, 0.5, 4.1, 14.8, 19.9, 34, 40, 45.6, 55.4, 61.3];  %bands 0, 16, 2
-%resonators = 5250 + [67.4 127 133 140.33 168];  
+%resonators = 5250 + [152.1];  
 
 Off
+close all;
 
 band0 = 5.25e3;
 bandchans = zeros(32,1);
@@ -40,13 +49,18 @@ for ii =1:length(resonators)
     offset(ii) = Foff;
 
     try
-        figure(ii)
+        %figure(ii)
         [eta, F0, latency, resp, f] = etaEstimator(band, [(offset(ii) - .3):0.01:(offset(ii) + 0.3)]);
         hold on; subplot(2,2,4);
         ax = axis; xt = ax(1) + 0.1*(ax(2)-ax(1)); 
         yt = ax(4) - 0.1*(ax(4)-ax(3));
         text(xt, yt, ['Line @ ', num2str(res), ' MHz    (' num2str(res - 5250) ' wrt band center'])
-        hold off;
+        
+        yt = ax(3) + 0.1*(ax(4)-ax(3));
+        Fc = F0 + bandCenter(band);
+        text(xt, yt, ['Min @ ', num2str(Fc), ' MHz    (' num2str(Fc-5250) ' wrt band center'])
+        hold off
+        
         etaPhaseDeg(ii) = angle(eta)*180/pi;
         etaScaled(ii) =abs(eta)/19.2;
     catch

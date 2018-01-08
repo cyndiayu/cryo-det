@@ -2,9 +2,19 @@
 -- File       : DspCoreWrapper.vhd
 -- Company    : SLAC National Accelerator Laboratory
 -- Created    : 2017-06-28
--- Last update: 2017-12-08
+-- Last update: 2018-01-08
 -------------------------------------------------------------------------------
--- Description:
+-- Description: System Generator Wrapper
+--
+-- Notes: BUILD_DSP_G.BIT0 maps to BAY[0].ADC/DAC[1:0]
+--        BUILD_DSP_G.BIT1 maps to BAY[0].ADC/DAC[3:2]
+--        BUILD_DSP_G.BIT2 maps to BAY[0].ADC/DAC[5:4]
+--        BUILD_DSP_G.BIT3 maps to BAY[0].ADC/DAC[7:6]
+--        BUILD_DSP_G.BIT4 maps to BAY[1].ADC/DAC[1:0]
+--        BUILD_DSP_G.BIT5 maps to BAY[1].ADC/DAC[3:2]
+--        BUILD_DSP_G.BIT6 maps to BAY[1].ADC/DAC[5:4]
+--        BUILD_DSP_G.BIT7 maps to BAY[1].ADC/DAC[7:6]
+--
 -------------------------------------------------------------------------------
 -- This file is part of 'LCLS2 AMC Carrier Firmware'.
 -- It is subject to the license terms in the LICENSE.txt file found in the 

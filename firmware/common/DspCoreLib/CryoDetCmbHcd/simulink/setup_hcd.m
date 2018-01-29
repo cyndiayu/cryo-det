@@ -76,6 +76,19 @@ for i = 1:number_subband/2
     analysis_coefficients2 = [analysis_coefficients2, fliplr(filts(i*2,:))];
 end
 
+% rearrange to process 1 samples/clock
+synthesis_coefficients = [];
+
+for i = 1:number_subband
+    synthesis_coefficients = [synthesis_coefficients, filts(i,:)];
+end
+
+analysis_coefficients = [];
+
+for i = 1:number_subband
+    analysis_coefficients = [analysis_coefficients, fliplr(filts(i,:))];
+end
+
 
 
 etaRomData = zeros(1,128);

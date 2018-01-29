@@ -72,7 +72,8 @@ export REMOVE_UNUSED_CODE = 0
 target: prom
 
 # Define target part
-export PRJ_PART = XCKU11P-FFVA1156-3-E
+#export PRJ_PART = XCKU11P-FFVA1156-3-E
+export PRJ_PART = XCKU15P-FFVA1156-3-E
 
 # Use top level makefile
 include ../../submodules/ruckus/system_vivado.mk

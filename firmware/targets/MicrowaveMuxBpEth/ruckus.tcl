@@ -11,6 +11,3 @@ loadRuckusTcl $::env(TOP_DIR)/submodules
 # Load target's source code and constraints
 loadSource      -dir  "$::DIR_PATH/hdl/"
 loadConstraints -dir  "$::DIR_PATH/hdl/"
-
-# Place and Route strategy 
-set_property strategy Performance_ExplorePostRoutePhysOpt [get_runs impl_1]

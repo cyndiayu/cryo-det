@@ -12,7 +12,10 @@ loadRuckusTcl $::env(TOP_DIR)/submodules
 loadSource      -dir  "$::DIR_PATH/hdl/"
 loadConstraints -dir  "$::DIR_PATH/hdl/"
 
-# Place and Route strategy 
+# Place and Route strategy
 set_property strategy Performance_ExplorePostRoutePhysOpt [get_runs impl_1]
-set_property STEPS.POWER_OPT_DESIGN.IS_ENABLED true [get_runs impl_1]
-set_property STEPS.POST_PLACE_POWER_OPT_DESIGN.IS_ENABLED true [get_runs impl_1]
+#set_property STEPS.POWER_OPT_DESIGN.IS_ENABLED true [get_runs impl_1]
+#set_property STEPS.POST_PLACE_POWER_OPT_DESIGN.IS_ENABLED true [get_runs impl_1]
+
+set_property STEPS.SYNTH_DESIGN.ARGS.FLATTEN_HIERARCHY rebuilt [get_runs synth_1]
+set_property STEPS.SYNTH_DESIGN.ARGS.RETIMING          on      [get_runs synth_1]

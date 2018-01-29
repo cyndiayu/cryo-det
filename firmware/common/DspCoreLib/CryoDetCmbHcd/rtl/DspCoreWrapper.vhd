@@ -38,7 +38,7 @@ use work.AppTopPkg.all;
 entity DspCoreWrapper is
    generic (
       TPD_G            : time             := 1 ns;
-      BUILD_DSP_G      : slv(7 downto 0)  := x"01";
+      BUILD_DSP_G      : slv(7 downto 0)  := x"FF";
       AXI_ERROR_RESP_G : slv(1 downto 0)  := AXI_RESP_SLVERR_C;
       AXI_BASE_ADDR_G  : slv(31 downto 0) := (others => '0'));
    port (
@@ -83,9 +83,6 @@ architecture mapping of DspCoreWrapper is
    signal axilReadMasters  : AxiLiteReadMasterArray(NUM_AXI_MASTERS_C-1 downto 0);
    signal axilReadSlaves   : AxiLiteReadSlaveArray(NUM_AXI_MASTERS_C-1 downto 0);
 
-
-   signal adcValidsRemap : Slv10Array(1 downto 0);
-   signal adcValuesRemap : sampleDataVectorArray(1 downto 0, 9 downto 0);
 
    signal adc        : Slv32Array(15 downto 0);
    signal dac        : Slv32Array(15 downto 0);
@@ -185,39 +182,19 @@ begin
             dout   => sigGenSync(i));
    end generate SYNC_SIGGEN;
 
-   U_AdcMux : entity work.DspCoreWrapperAdcMux
-      generic map (
-         TPD_G            => TPD_G,
-         AXI_ERROR_RESP_G => AXI_ERROR_RESP_G)
-      port map (
-         -- ADC Interface
-         jesdClk         => jesdClk,
-         jesdRst         => jesdRst,
-         adcValidIn      => adcValids,
-         adcValueIn      => adcValues,
-         adcValidOut     => adcValidsRemap,
-         adcValueOut     => adcValuesRemap,
-         -- AXI-Lite Interface
-         axilClk         => axilClk,
-         axilRst         => axilRst,
-         axilReadMaster  => axilReadMasters(8),
-         axilReadSlave   => axilReadSlaves(8),
-         axilWriteMaster => axilWriteMasters(8),
-         axilWriteSlave  => axilWriteSlaves(8));
-
    GEN_CH :
    for i in 7 downto 0 generate
 
       --------------
       -- JESD BAY[0]
       --------------
-      adc(i)          <= adcValuesRemap(0, i);
+      adc(i)          <= adcValues(0, i);
       dacValues(0, i) <= dac(i);
 
       --------------
       -- JESD BAY[1]
       --------------   
-      adc(i+8)        <= adcValuesRemap(1, i);
+      adc(i+8)        <= adcValues(1, i);
       dacValues(1, i) <= dac(i+8);
 
    end generate GEN_CH;

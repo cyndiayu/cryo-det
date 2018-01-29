@@ -120,6 +120,22 @@ architecture mapping of DspCoreWrapperBase is
          wrdata7                    : out std_logic_vector (31 downto 0);
          dac0                       : out std_logic_vector (15 downto 0);
          dac1                       : out std_logic_vector (15 downto 0);
+         imag_1x_out0               : out std_logic_vector (31 downto 0);
+         imag_1x_out1               : out std_logic_vector (31 downto 0);
+         real_1x_out0               : out std_logic_vector (31 downto 0);
+         real_1x_out1               : out std_logic_vector (31 downto 0);
+         imag_1x_in0                : in  std_logic_vector (31 downto 0);
+         imag_1x_in1                : in  std_logic_vector (31 downto 0);
+         real_1x_in0                : in  std_logic_vector (31 downto 0);
+         real_1x_in1                : in  std_logic_vector (31 downto 0);
+         imag_2x_out0               : out std_logic_vector (15 downto 0);
+         imag_2x_out1               : out std_logic_vector (15 downto 0);
+         real_2x_out0               : out std_logic_vector (15 downto 0);
+         real_2x_out1               : out std_logic_vector (15 downto 0);
+         imag_2x_in0                : in  std_logic_vector (15 downto 0);
+         imag_2x_in1                : in  std_logic_vector (15 downto 0);
+         real_2x_in0                : in  std_logic_vector (15 downto 0);
+         real_2x_in1                : in  std_logic_vector (15 downto 0);
          dsp_axi_lite_s_axi_awready : out std_logic;
          dsp_axi_lite_s_axi_wready  : out std_logic;
          dsp_axi_lite_s_axi_bresp   : out std_logic_vector (1 downto 0);
@@ -148,6 +164,18 @@ architecture mapping of DspCoreWrapperBase is
 
    signal adcSync : Slv16Array(1 downto 0) := (others => (others => '0'));
    signal dacSync : Slv16Array(1 downto 0) := (others => (others => '0'));
+
+   -- dsp2x_clk domain (16 bit data)
+   signal real_2x_out : Slv16Array(1 downto 0) := (others => (others => '0'));
+   signal imag_2x_out : Slv16Array(1 downto 0) := (others => (others => '0'));
+   signal real_2x_in  : Slv16Array(1 downto 0) := (others => (others => '0'));
+   signal imag_2x_in  : Slv16Array(1 downto 0) := (others => (others => '0'));
+
+   -- dsp_clk domain (32 bit data)
+   signal real_1x_out : Slv32Array(1 downto 0) := (others => (others => '0'));
+   signal imag_1x_out : Slv32Array(1 downto 0) := (others => (others => '0'));
+   signal real_1x_in  : Slv32Array(1 downto 0) := (others => (others => '0'));
+   signal imag_1x_in  : Slv32Array(1 downto 0) := (others => (others => '0'));
 
 begin
 
@@ -180,6 +208,59 @@ begin
             rdRst    => jesdRst,
             validOut => open,
             dataOut  => dac(i));
+
+      U_REAL_2X_TO_1X : entity work.Jesd16bTo32b
+      generic map (
+         TPD_G => TPD_G)
+      port map (
+         wrClk    => jesdClk2x,
+         wrRst    => jesdRst2x,
+         validIn  => '1',
+         dataIn   => real_2x_out(i),
+         rdClk    => jesdClk,
+         rdRst    => jesdRst,
+         validOut => open,
+         dataOut  => real_1x_in(i));
+
+      U_IMAG_2X_TO_1X : entity work.Jesd16bTo32b
+      generic map (
+         TPD_G => TPD_G)
+      port map (
+         wrClk    => jesdClk2x,
+         wrRst    => jesdRst2x,
+         validIn  => '1',
+         dataIn   => imag_2x_out(i),
+         rdClk    => jesdClk,
+         rdRst    => jesdRst,
+         validOut => open,
+         dataOut  => imag_1x_in(i));
+
+      U_REAL_1X_TO_2X : entity work.Jesd32bTo16b
+      generic map (
+         TPD_G => TPD_G)
+      port map (
+         wrClk    => jesdClk,
+         wrRst    => jesdRst,
+         validIn  => '1',
+         dataIn   => real_1x_out(i),
+         rdClk    => jesdClk2x,
+         rdRst    => jesdRst2x,
+         validOut => open,
+         dataOut  => real_2x_in(i));
+
+      U_IMAG_1X_TO_2X : entity work.Jesd32bTo16b
+      generic map (
+         TPD_G => TPD_G)
+      port map (
+         wrClk    => jesdClk,
+         wrRst    => jesdRst,
+         validIn  => '1',
+         dataIn   => imag_1x_out(i),
+         rdClk    => jesdClk2x,
+         rdRst    => jesdRst2x,
+         validOut => open,
+         dataOut  => imag_2x_in(i));
+
 
    end generate GEN_2X_CLK;
 
@@ -220,6 +301,25 @@ begin
          -- DAC Ports (dsp2x_clk domain)
          dac0                       => dacSync(0),
          dac1                       => dacSync(1),
+         -- Channelized data in/out (dsp2x_clk domain)
+         imag_2x_out0               => imag_2x_out(0),
+         imag_2x_out1               => imag_2x_out(1),
+         real_2x_out0               => real_2x_out(0),
+         real_2x_out1               => real_2x_out(1),
+         imag_2x_in0                => imag_2x_in(0),
+         imag_2x_in1                => imag_2x_in(1),
+         real_2x_in0                => real_2x_in(0),
+         real_2x_in1                => real_2x_in(1),
+
+         -- Channelized data in/out (dsp_clk domain)
+         imag_1x_out0               => imag_1x_out(0),
+         imag_1x_out1               => imag_1x_out(1),
+         real_1x_out0               => real_1x_out(0),
+         real_1x_out1               => real_1x_out(1),
+         imag_1x_in0                => imag_1x_in(0),
+         imag_1x_in1                => imag_1x_in(1),
+         real_1x_in0                => real_1x_in(0),
+         real_1x_in1                => real_1x_in(1),
          -- RAM Ready Only Ports (dsp_clk domain)
          rddata0                    => ramDout(0),
          rddata1                    => ramDout(1),

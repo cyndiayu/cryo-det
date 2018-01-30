@@ -178,18 +178,8 @@ architecture mapping of AppCore is
    signal selectRamp : sl;
    signal rampCnt    : slv(31 downto 0);
 
-   signal s_dacValues  :  sampleDataVectorArray(1 downto 0, 9 downto 0);
-
 begin
 
-   DAC_HACK : -- tie all DAC to DAC0 output
-   for i in 3 downto 0 generate
-       dacValues(0, (2*i))   <= s_dacValues(0, 0);
-       dacValues(0, (2*i)+1) <= s_dacValues(0, 1);
-
-       dacValues(1, (2*i))   <= s_dacValues(0, 0);
-       dacValues(1, (2*i)+1) <= s_dacValues(0, 1);
-   end generate DAC_HACK;
    ---------------------
    -- Unused Connections
    ---------------------
@@ -284,7 +274,7 @@ begin
          adcValids       => adcValids,
          adcValues       => adcValues,
          dacValids       => dacValids,
-         dacValues       => s_dacValues,
+         dacValues       => dacValues,
          debugValids     => debugValids,
          debugValues     => debugValues,
          -- DAC Signal Generator Interface (jesdClk[1:0] domain)
@@ -372,5 +362,4 @@ begin
          evrTrig         => '0',        -- ignore EVR
          trigHw          => trigHw(0),
          freezeHw        => freezeHw(0));
-
 end mapping;

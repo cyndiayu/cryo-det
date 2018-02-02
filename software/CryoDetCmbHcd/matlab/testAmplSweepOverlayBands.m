@@ -1,4 +1,4 @@
-%script testAmplSweep
+%script testAmplSweepOverlayBands
 %sweeps a full band
 %updated SRS 15Dec2017
 

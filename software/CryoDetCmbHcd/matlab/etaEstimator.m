@@ -1,10 +1,14 @@
-function [eta, F0, latency, resp, f] = etaEstimator(band, freqs)
+function [eta, F0, latency, resp, f] = etaEstimator(band, freqs, Adrive)
 %sweep frequencies in a band,
 % aquire complex repsonse vs frequency at dF block where eta is used
 % fit to dF/dS21 to estimate eta
 % must scan twice, once to get real part, once to get imag part
 
 %SSmith 22 Nov 2017
+
+if nargin <3 
+    Adrive = 12; %default -6dB
+end; 
 
 Nread = 1   ;    %normally run with Nread>=4
 dwell = 0.07;
@@ -14,7 +18,7 @@ eta = 0;
 F0 = 0; 
 latency = 0;
 
-[resp, f] = etaScan(band, freqs, Nread, dwell);
+[resp, f] = etaScan(band, freqs, Nread, dwell, Adrive);
 
 figure;
 %assume higher level code has established a figure or we create a new one
@@ -68,11 +72,10 @@ end                      % end of function etaEstimator
 %_________________________________________________________________________
 % subfunction etaScan
 
-function [resp, f] = etaScan(band, freqs, Nread, dwell)
-% Sweep frequency, plot complex response ast inpur to dF calculation
+function [resp, f] = etaScan(band, freqs, Nread, dwell, Adrive)
+% Sweep frequency, plot complex response at input to dF calculation
 % band selects one of 32 sub bands (0:31  allowed)
 % freqs is a vector of frequencies in the range -19.2 (MHz) to + 19.2 (MHz)
-
 
 % resp is complex response demodulated response
 % Nread (optional) number of reads of response per frequency setting
@@ -107,10 +110,6 @@ respQ = respI;
 % global feedback enable
 lcaPut( [rootPath, 'feedbackEnable'], 0 ) %Disable FB
 pause(dwell)
-
-% choose drive amplitude
-Adrive = 12; % -6 dB
-%Adrive = 15; %  full scale
 
 %Qualify inputs
 if band <0 | band > 31 

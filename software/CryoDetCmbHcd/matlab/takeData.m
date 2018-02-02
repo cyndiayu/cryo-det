@@ -6,20 +6,8 @@
 singleChannelReadoutOpt2 = lcaGet([rootPath 'singleChannelReadoutOpt2']);
 readoutChannelSelect = lcaGet([rootPath 'readoutChannelSelect']);
 
-% keep data organized by date
-datapath='/data/cpu-b000-hp01/cryo_data/data2/';
-now=datetime('now')
-dirdate=datestr(now,'yyyymmdd');
-datadir=fullfile(datapath,dirdate);
-
-% if today's date directory doesn't exist yet, make it
-if not(exist(datadir))
-    disp(['-> creating ' datadir]);
-    mkdir(datadir);
-end
-
-filename=num2str(round(posixtime(now)));
-disp(filename);
+ctime=ctimeForFile();
+filename=num2str(ctime);
 
 % add channel suffix for single channel data
 if singleChannelReadoutOpt2==1
@@ -27,6 +15,7 @@ if singleChannelReadoutOpt2==1
 end
 
 % add .dat suffix
+datadir=dataDirFromCtime(ctime);
 configfile=fullfile(datadir,[filename '.mat']);
 filename=fullfile(datadir,[filename '.dat']);
 disp(['filename=' filename]);

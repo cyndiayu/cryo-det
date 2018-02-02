@@ -4,44 +4,40 @@ AMCc:
       AmcCarrierTiming:
         enable: False
       AmcCarrierBsa:
-        BsaWaveformEngine[0]:
+        BsaWaveformEngine[:]:
           WaveformEngineBuffers:
             StartAddr[0]: 0x0000000000000000
-            StartAddr[1]: 0x0000000010000000
-            StartAddr[2]: 0x0000000020000000
-            StartAddr[3]: 0x0000000030000000
+            StartAddr[1]: 0x0000000020000000
+            StartAddr[2]: 0x0000000040000000
+            StartAddr[3]: 0x0000000080000000
             EndAddr[0]:   0x0000000000004000
-            EndAddr[1]:   0x0000000010004000
-            EndAddr[2]:   0x0000000020004000
-            EndAddr[3]:   0x0000000030004000
-            Enabled[0]: 0x1 # Enabled:  Full rate only supports 2x channels of streaming
-            Enabled[1]: 0x1 # Enabled:  Full rate only supports 2x channels of streaming
-            Enabled[2]: 0x0 # Enabled:  Full rate only supports 2x channels of streaming
-            Enabled[3]: 0x0 # Enabled:  Full rate only supports 2x channels of streaming
-            Mode[:]: DoneWhenFull
-            Init[:]: 0x0
-            SoftTrigger[:]: 0x0
-            MsgDest[:]: Auto-Readout
-            FramesAfterTrigger[:]: 0x0
-        BsaWaveformEngine[1]:
-          WaveformEngineBuffers:
-            StartAddr[0]: 0x0000000040000000
-            StartAddr[1]: 0x0000000050000000
-            StartAddr[2]: 0x0000000060000000
-            StartAddr[3]: 0x0000000070000000
-            EndAddr[0]:   0x0000000040004000
-            EndAddr[1]:   0x0000000050004000
-            EndAddr[2]:   0x0000000060004000
-            EndAddr[3]:   0x0000000070004000
-            Enabled[0]: 0x0 # Disabling 2nd DAQ MUX path
-            Enabled[1]: 0x0 # Disabling 2nd DAQ MUX path
-            Enabled[2]: 0x0 # Disabling 2nd DAQ MUX path
-            Enabled[3]: 0x0 # Disabling 2nd DAQ MUX path
-            Mode[:]: DoneWhenFull
-            Init[:]: 0x0
-            SoftTrigger[:]: 0x0
-            MsgDest[:]: Auto-Readout
-            FramesAfterTrigger[:]: 0x0
+            EndAddr[1]:   0x0000000020004000
+            EndAddr[2]:   0x0000000040004000
+            EndAddr[3]:   0x0000000080004000
+            Enabled[0]: 0x1
+            Enabled[1]: 0x1
+            Enabled[2]: 0x1
+            Enabled[3]: 0x1
+            Mode[0]: DoneWhenFull
+            Mode[1]: DoneWhenFull
+            Mode[2]: DoneWhenFull
+            Mode[3]: DoneWhenFull
+            Init[0]: 0x0
+            Init[1]: 0x0
+            Init[2]: 0x0
+            Init[3]: 0x0
+            SoftTrigger[0]: 0x0
+            SoftTrigger[1]: 0x0
+            SoftTrigger[2]: 0x0
+            SoftTrigger[3]: 0x0
+            MsgDest[0]: Auto-Readout
+            MsgDest[1]: Auto-Readout
+            MsgDest[2]: Auto-Readout
+            MsgDest[3]: Auto-Readout
+            FramesAfterTrigger[0]: 0x0
+            FramesAfterTrigger[1]: 0x0
+            FramesAfterTrigger[2]: 0x0
+            FramesAfterTrigger[3]: 0x0
       AxiSy56040:
         OutputConfig[0]: 0x0
         OutputConfig[1]: 0x3
@@ -49,67 +45,11 @@ AMCc:
         OutputConfig[3]: 0x1    
     AppTop:
       AppCore:
-        MicrowaveMuxCore[:]:
-          enable: 'True'          
-          PLL[0]:
-            REG[0]:  0x000001C0
-            REG[1]:  0x07BAAAA1
-            REG[2]:  0x2000C002
-            REG[3]:  0x00000003
-            REG[4]:  0x30008B84
-            REG[5]:  0x800025
-            REG[6]:  0x35046046
-            REG[7]:  0x12000007
-            REG[8]:  0x102D0428
-            REG[9]:  0x34337CC9
-            REG[10]:  0x00C03FFA
-            REG[11]:  0x61300B
-            REG[12]:  0x0001041C
-          PLL[1]:
-            REG[0]:  0x00000200
-            REG[1]:  0x08D55551
-            REG[2]:  0x1000C002
-            REG[3]:  0x00000003
-            REG[4]:  0x30008B84
-            REG[5]:  0x800025
-            REG[6]:  0x3503C046
-            REG[7]:  0x12000007
-            REG[8]:  0x102D0428
-            REG[9]:  0x34337CC9
-            REG[10]:  0x00C03FFA
-            REG[11]:  0x61300B
-            REG[12]:  0x0001041C
-          PLL[2]:
-            REG[0]:  0x00000240
-            REG[1]:  0x09F00001
-            REG[2]:  0x0000C002
-            REG[3]:  0x00000003
-            REG[4]:  0x30008B84
-            REG[5]:  0x800025
-            REG[6]:  0x35036056
-            REG[7]:  0x12000007
-            REG[8]:  0x102D0428
-            REG[9]:  0x34337CC9
-            REG[10]:  0x00C03FFA
-            REG[11]:  0x61300B
-            REG[12]:  0x0001041C
-          PLL[3]:
-            REG[0]:  0x00000280
-            REG[1]:  0x0B0AAAA1
-            REG[2]:  0x1FFCC002
-            REG[3]:  0x00000003
-            REG[4]:  0x30008B84
-            REG[5]:  0x800025
-            REG[6]:  0x35030056
-            REG[7]:  0x12000007
-            REG[8]:  0x102D0428
-            REG[9]:  0x34337CC9
-            REG[10]:  0x00C03FFA
-            REG[11]:  0x61300B
-            REG[12]:  0x0001041C
+        AmcCryoCore[0]:
+          enable: 'True'
           DBG:
-            txSyncMask: 0x0    # Both DAC channels
-            # txSyncMask: 0x2  # Only using DAC[0]
+            # txSyncMask: 0x0  # Both DAC channels
+            txSyncMask: 0x2  # Only using DAC[0]
             # txSyncMask: 0x1  # Only using DAC[1]
           LMK:
             EnableSync: 0xFF
@@ -136,13 +76,13 @@ AMCc:
             LmkReg_0x0115: 0x00
             LmkReg_0x0116: 0x70
             LmkReg_0x0117: 0x9E
-            LmkReg_0x0118: 0x74
+            LmkReg_0x0118: 0x61
             LmkReg_0x0119: 0x55
-            LmkReg_0x011B: 0x00
+            LmkReg_0x011B: 0x02
             LmkReg_0x011C: 0x22
             LmkReg_0x011D: 0x00
             LmkReg_0x011E: 0x70
-            LmkReg_0x011F: 0x06
+            LmkReg_0x011F: 0x00
             LmkReg_0x0120: 0x61
             LmkReg_0x0121: 0x55
             LmkReg_0x0123: 0x01
@@ -194,12 +134,12 @@ AMCc:
             LmkReg_0x0153: 0x00
             LmkReg_0x0154: 0x78
             LmkReg_0x0155: 0x00
-            LmkReg_0x0156: 0x01
+            LmkReg_0x0156: 0x7D
             LmkReg_0x0157: 0x00
             LmkReg_0x0158: 0x96
-            LmkReg_0x0159: 0x00
-            LmkReg_0x015A: 0x0A
-            LmkReg_0x015B: 0xD0
+            LmkReg_0x0159: 0x06
+            LmkReg_0x015A: 0x00
+            LmkReg_0x015B: 0xD4
             LmkReg_0x015C: 0x20
             LmkReg_0x015D: 0x00
             LmkReg_0x015E: 0x00
@@ -210,25 +150,25 @@ AMCc:
             LmkReg_0x0163: 0x00
             LmkReg_0x0164: 0x00
             LmkReg_0x0165: 0x05
+            LmkReg_0x0171: 0xAA
+            LmkReg_0x0172: 0x02
+            LmkReg_0x0173: 0x0 
+            LmkReg_0x0174: 0x0 
+            LmkReg_0x017C: 0x15
+            LmkReg_0x017D: 0x33
             LmkReg_0x0166: 0x00
             LmkReg_0x0167: 0x00
             LmkReg_0x0168: 0x05
             LmkReg_0x0169: 0x59
             LmkReg_0x016A: 0x20
-            LmkReg_0x017D: 0x33
-            LmkReg_0x017C: 0x15
-            LmkReg_0x0174: 0x00
-            LmkReg_0x0173: 0x00
-            LmkReg_0x0172: 0x02
-            LmkReg_0x0171: 0xAA
-            LmkReg_0x016E: 0x13
-            LmkReg_0x016D: 0x00
-            LmkReg_0x016C: 0x00
             LmkReg_0x016B: 0x00
+            LmkReg_0x016C: 0x00
+            LmkReg_0x016D: 0x00
+            LmkReg_0x016E: 0x13
           DAC[:]:
             DacReg[0]: 0x0218   # Sets board to 4X interpolation (Default: 0x0218)
             DacReg[1]: 0x0003   
-            DacReg[2]: 0x2072   # 16 bits, mixer on, NCO on, two's compliment data
+            DacReg[2]: 0x2052   # 16 bits, mixer on, NCO on, two's compliment data
             DacReg[3]: 0xF300   
             DacReg[4]: 0xF0F0   # This masks lanes 7,6,5,4 fifo and lane errors.  Uros had it masking lanes 7,6,5,4,3,2 because this was for the demo board that only had two lanes I think.
             DacReg[5]: 0xFF07   # Not sure here.  This is masking some sysref errors, Uros had it only masking serdes block 0 and 1 PLL locks and the DAC PLL lock alarm
@@ -248,10 +188,10 @@ AMCc:
             DacReg[19]: 0x0000
             DacReg[20]: 0x0000
             DacReg[21]: 0x0000
-            DacReg[22]: 0x4e20  # This is the upper 16 bits of the NCO frequency for the DACAB path
+            DacReg[22]: 0x2ee0  # This is the upper 16 bits of the NCO frequency for the DACAB path
             DacReg[23]: 0x0000
             DacReg[24]: 0x0000
-            DacReg[25]: 0x4e20  # This is the upper 16 bits of the NCO frequency for the DACCD path
+            DacReg[25]: 0x2ee0  # This is the upper 16 bits of the NCO frequency for the DACCD path
             DacReg[26]: 0x0020
             DacReg[27]: 0x0000
             DacReg[28]: 0x0000
@@ -261,7 +201,6 @@ AMCc:
             DacReg[32]: 0x8008
             DacReg[33]: 0x0000
             DacReg[34]: 0x1B1B  # Sets where samples go from JESD.  Datapath D goes to DACD, Datapath C goes to DACC, DatapathB goes to DACB and DatapathA goes to DACA
-            #DacReg[34]: 0x4B1B  # Sets where samples go from JESD.  Datapath D goes to DACD, Datapath C goes to DACC, DatapathB goes to DACB and DatapathA goes to DACA
             DacReg[35]: 0x01FF  # This routes the "sleep terminal signal"  we don't use this so, it doesn't matter.
             DacReg[36]: 0x0020  # Use only the next sysref pulse.  Uros had it set to NOT use the sysref pulse
             DacReg[37]: 0x4000  # DACCLK div 4 to get JESD clock Uros had DACCLK=JESDCLK
@@ -355,7 +294,6 @@ AMCc:
             DacReg[125]: 0x0000
             EnableTx: 0x1
           ADC[:]:
-            enable: True
             SYNCB_POL: 0x1
             PDN_SYSREF: 0x1
             SLOW_SP_EN1: 0x1 # 0x1 = ADC sampling rates are slower than 2.5 GSPS
@@ -369,8 +307,8 @@ AMCc:
               DECIM_FACTOR: 0x0
               DUAL_BAND_EN: 0x0
               REAL_OUT_EN: 0x0
-              DDC0_NCO1_LSB: 0x20
-              DDC0_NCO1_MSB: 0x4e
+              DDC0_NCO1_LSB: 0xE0
+              DDC0_NCO1_MSB: 0x2E
               DDC0_NCO2_LSB: 0x00
               DDC0_NCO2_MSB: 0x00
               DDC0_NCO3_LSB: 0x00
@@ -420,30 +358,14 @@ AMCc:
         ###########################################
         ## System Generator Configuration Registers
         ###########################################
-        SysgenCryo:      
-          Base[0]:  
-            ScratchPad: 0xDEADBEEF
-            filterAlpha: 0x4000
-            rfEnable: 1
-            feedbackGain: 0x10
-            feedbackLimit: 0x800
-            # muxSelect: SigGen
-            # Ch0MuxSel: SineGen
-            # Ch0B1CjEn: CH0_B1_Norm
-            # Ch0B2CjEn: CH0_B2_Norm
-            # Ch0FLO1: 0x00085555
-            # Ch0FLO2: 0x00535555
-            # SineGenFreq: 0x000010AB
-            # LO1_Poff: 0x00085553
-            # LO2_Poff: 0x00535541
-            synthesisScale: 0x2
-            analysisScale: 0x1
-
+        # SysgenCryo:      
+          # ScratchPad: 0xDEADBEEF
+          # muxSelect: SigGen
         ###########################################
       AppTopJesd[:]:
         JesdRx:
-          Enable: 0x3F3 # Both ADC channels
-          # Enable: 0x33  # Only using ADC[0]
+          # Enable: 0x3F3 # Both ADC channels
+          Enable: 0x33    # Only using ADC[0]
           # Enable: 0x3C0 # Only using ADC[1]
           Polarity: 0x100
           InvertAdcData: 0x00
@@ -454,12 +376,12 @@ AMCc:
           InvertSync: Inverted
           ReplaceEnable: Enabled
           SubClass: 0x1
-          SysrefDelay: 0x0
+          SysrefDelay: 0xB
         JesdTx:
-          Enable: 0x3CF # Both DAC channels
-          # Enable: 0xF   # Only using DAC[0]
+          # Enable: 0x3CF # Both DAC channels
+          Enable: 0xF     # Only using DAC[0]
           # Enable: 0x3C0 # Only using DAC[1]
-          Polarity: 0x82   # JESD1_TO_AMC appears to be inverted???
+          Polarity: 0x2   # JESD1_TO_AMC appears to be inverted???
           Loopback: 0x0
           InvertDacData: 0x0
           HighAmplitudeVal: 0xC000
@@ -472,20 +394,14 @@ AMCc:
           ReplaceEnable: 0x1
           SubClass: 0x1  
           
-          dataOutMux[:]: OutputOnes # turn off thes channels one is the new zero
-          dataOutMux[6]: UserData
-          dataOutMux[7]: UserData
-          # dataOutMux[0]: OutputOnes # turn off thes channels one is the new zero
-          # dataOutMux[1]: OutputOnes # Unused channel
-          # dataOutMux[2]: OutputOnes # Unused channel
-          # dataOutMux[3]: OutputOnes # Unused channel
-          dataOutMux[4]: OutputOnes # Unused channel
-          dataOutMux[5]: OutputOnes # Unused channel
+          dataOutMux[:]: UserData
+          dataOutMux[4]: OutputZero # Unused channel
+          dataOutMux[5]: OutputZero # Unused channel
           testOutMux[:]: SquareWave
           
           txDiffCtrl[:]: 0xFF
-          txDiffCtrl[4]: 0x00 # Unused channel
-          txDiffCtrl[5]: 0x00 # Unused channel
+          txDiffCtrl[4]: 0 # Unused channel
+          txDiffCtrl[5]: 0 # Unused channel
           
           txPreCursor[:]: 0x0F
           txPreCursor[4]: 0xFF # Unused channel
@@ -501,17 +417,13 @@ AMCc:
           # testOutMux[:]: SquareWave
           # #############################
       DaqMuxV2:
-        InputMuxSel[0]: 'Ch7'
-        InputMuxSel[1]: 'Ch6'
+        # DataBufferSize: '0x20000'
+        InputMuxSel[0]: 'Ch0'
+        InputMuxSel[1]: 'Ch1'
         FormatDataWidth[:]: 'D16-bit'
         FormatSign[:]: 'Unsigned'
         DecimationAveraging[:]: 'Disabled'
         PacketHeaderEn: 'Disabled'
-        TriggerHwAutoRearm: Enabled
-        TriggerHwArm: '0x1'
-      DaqMuxV2[1]:
-        TriggerHwAutoRearm: Disabled
-        TriggerHwArm: '0x0'
       DacSigGen:
         EnableMask: 0x3   # Enable both channels
         ModeMask:   0x3   # Set both channels into 'Periodic Mode'
@@ -519,18 +431,21 @@ AMCc:
         #####################################################
         #####################################################
         #####################################################
-        # CsvFilePath: /afs/slac.stanford.edu/u/re/ruckman/projects/lcls/cryo-det/firmware/targets/CryoCmbRtmEth/config/multitones_500_baseband.csv
-        ##CsvFilePath: /afs/slac.stanford.edu/u/rl/dandvan/cryo_det/matlab/multitone_space1p8gauss0p6MHz_b_baseband16k.csv
-        CsvFilePath: /home/cryo/mdewart/multitone_space1p8gauss0p6MHz_b_baseband16k.csv
-        #
-        # CsvFilePath: /afs/slac.stanford.edu/u/rl/dandvan/cryo_det/matlab/Is_zeros_Qs_ones.csv
-        # CsvFilePath: /afs/slac.stanford.edu/u/rl/dandvan/cryo_det/matlab/broad_noise4.csv
-        # CsvFilePath: /afs/slac.stanford.edu/u/re/ruckman/projects/lcls/cryo-det/firmware/targets/CryoCmbRtmEth/config/example_csv_2Tones_4096pts.csv
-        # CsvFilePath: /afs/slac.stanford.edu/u/re/ruckman/projects/lcls/cryo-det/firmware/targets/CryoCmbRtmEth/config/example_csv_1Tones_10MHzoffset.csv
-        # CsvFilePath: /afs/slac.stanford.edu/u/re/ruckman/projects/lcls/cryo-det/firmware/targets/CryoCmbRtmEth/config/Is_ones_Qs_ones.csv
-        # CsvFilePath: /afs/slac.stanford.edu/u/re/ruckman/projects/lcls/cryo-det/firmware/targets/CryoCmbRtmEth/config/Is_Ones_Qs_zeros.csv
-        # CsvFilePath: /afs/slac.stanford.edu/u/re/ruckman/projects/lcls/cryo-det/firmware/targets/CryoCmbRtmEth/config/Is_zeros_Qs_ones.csv
-        # CsvFilePath: /afs/slac.stanford.edu/u/re/ruckman/projects/lcls/cryo-det/firmware/targets/CryoCmbRtmEth/config/Is_zeros_Qs_zeros.csv
+        # CsvFilePath: /afs/slac.stanford.edu/u/re/ruckman/projects/lcls/cryo-det/firmware/targets/CryoCmbBpEth/config/multitones_500_baseband.csv
+        # CsvFilePath: /afs/slac.stanford.edu/u/re/ruckman/projects/lcls/cryo-det/firmware/targets/CryoCmbBpEth/config/example_csv_2Tones_4096pts.csv
+        # CsvFilePath: /afs/slac.stanford.edu/u/re/ruckman/projects/lcls/cryo-det/firmware/targets/CryoCmbBpEth/config/example_csv_1Tones_10MHzoffset.csv
+        # CsvFilePath: /afs/slac.stanford.edu/u/re/ruckman/projects/lcls/cryo-det/firmware/targets/CryoCmbBpEth/config/Is_ones_Qs_ones.csv
+        # CsvFilePath: /afs/slac.stanford.edu/u/re/ruckman/projects/lcls/cryo-det/firmware/targets/CryoCmbBpEth/config/Is_Ones_Qs_zeros.csv
+        # CsvFilePath: /afs/slac.stanford.edu/u/re/ruckman/projects/lcls/cryo-det/firmware/targets/CryoCmbBpEth/config/Is_zeros_Qs_ones.csv
+        # CsvFilePath: /afs/slac.stanford.edu/u/re/ruckman/projects/lcls/cryo-det/firmware/targets/CryoCmbBpEth/config/Is_zeros_Qs_zeros.csv
+        # CsvFilePath: /afs/slac.stanford.edu/u/rl/dandvan/cryo_det/matlab/IsandQsVary.csv
+        # CsvFilePath: /afs/slac.stanford.edu/u/rl/dandvan/cryo_det/matlab/multitones_499_baseband_16k.csv
+        # CsvFilePath: /afs/slac.stanford.edu/u/rl/dandvan/cryo_det/matlab/broad_noise_trig2.csv
+        # CsvFilePath: /afs/slac.stanford.edu/u/rl/dandvan/cryo_det/matlab/broad_noise1.csv
+        # CsvFilePath: /afs/slac.stanford.edu/u/rl/dandvan/cryo_det/matlab/multitones_2_baseband.csv
+        # CsvFilePath: /afs/slac.stanford.edu/u/rl/dandvan/cryo_det/matlab/multitones_13333_baseband.csv
+        CsvFilePath: /afs/slac.stanford.edu/u/rl/dandvan/cryo_det/matlab/multitones_247_baseband.csv
+        # CsvFilePath: /afs/slac.stanford.edu/u/rl/dandvan/cryo_det/matlab/multitones_238_baseband_4ksamp.csv
         #####################################################
         #####################################################
         #####################################################

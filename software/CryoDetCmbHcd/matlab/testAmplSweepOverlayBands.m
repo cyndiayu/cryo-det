@@ -4,7 +4,7 @@
 
 Nread = 2;
 dwell = 0.02;
-freqs = -10:0.2:10;   %frequencies in MHz
+freqs = -10:0.1:10;   %frequencies in MHz
 
 resp = zeros(32, size(freqs,2)*Nread);
 f = zeros(32, size(freqs,2)*Nread);

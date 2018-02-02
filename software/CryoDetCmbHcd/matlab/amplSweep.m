@@ -35,7 +35,8 @@ lcaPut( [rootPath, 'toneScale'], 2 )  % half of full scale amplitude in a single
 lcaPut( [rootPath, 'feedbackEnable'], 0 ) %Disable FB
 
 % choose drive amplitude
- Adrive = 13; % -6 dB
+Adrive = 10; % -15 dB
+%Adrive = 13; % -6 dB
 %Adrive = 15; %  full scale
 
 %Qualify inputs

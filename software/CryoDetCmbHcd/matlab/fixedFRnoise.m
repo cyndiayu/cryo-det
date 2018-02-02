@@ -1,4 +1,4 @@
-addpath('/home/cryo/shawn/matlab');
+addpath('./glob/');
 
 path2datedirs='/data/cpu-b000-hp01/cryo_data/data2/';
 

@@ -427,7 +427,7 @@ class CryoFreqBand(pr.Device):
         ))
 
 
-        self.add(pr.RemoteVariable(    
+        self.add(pr.RemoteVariable(
             name         = "refPhaseDelayFine",
             description  = "fine delay control (307.2MHz clock)",
             offset       =  0x100,
@@ -436,6 +436,129 @@ class CryoFreqBand(pr.Device):
             base         = pr.UInt,
             mode         = "RW",
         ))
+
+
+
+        self.add(pr.RemoteVariable(
+            name         = "lmsDelay",
+            description  = "fine delay control (307.2MHz clock)",
+            offset       =  0x100,
+            bitSize      =  3,
+            bitOffset    =  12,
+            base         = pr.UInt,
+            mode         = "RW",
+        ))
+
+        self.add(pr.RemoteVariable(
+            name         = "lmsGain",
+            description  = "fine delay control (307.2MHz clock)",
+            offset       =  0x100,
+            bitSize      =  3,
+            bitOffset    =  9,
+            base         = pr.UInt,
+            mode         = "RW",
+        ))
+
+        self.add(pr.RemoteVariable(
+            name         = "lmsEnable1",
+            description  = "fine delay control (307.2MHz clock)",
+            offset       =  0x100,
+            bitSize      =  1,
+            bitOffset    =  15,
+            base         = pr.UInt,
+            mode         = "RW",
+        ))
+
+        self.add(pr.RemoteVariable(
+            name         = "lmsEnable2",
+            description  = "fine delay control (307.2MHz clock)",
+            offset       =  0x100,
+            bitSize      =  1,
+            bitOffset    =  16,
+            base         = pr.UInt,
+            mode         = "RW",
+        ))
+
+        self.add(pr.RemoteVariable(
+            name         = "lmsEnable3",
+            description  = "fine delay control (307.2MHz clock)",
+            offset       =  0x100,
+            bitSize      =  1,
+            bitOffset    =  17,
+            base         = pr.UInt,
+            mode         = "RW",
+        ))
+
+        self.add(pr.RemoteVariable(
+            name         = "lmsA1",
+            description  = "fine delay control (307.2MHz clock)",
+            offset       =  0x018,
+            bitSize      =  32,
+            bitOffset    =  0,
+            base         = pr.Int,
+            mode         = "RO",
+        ))
+
+        self.add(pr.RemoteVariable(
+            name         = "lmsA2",
+            description  = "fine delay control (307.2MHz clock)",
+            offset       =  0x01C,
+            bitSize      =  32,
+            bitOffset    =  0,
+            base         = pr.Int,
+            mode         = "RO",
+        ))
+
+        self.add(pr.RemoteVariable(
+            name         = "lmsA3",
+            description  = "fine delay control (307.2MHz clock)",
+            offset       =  0x020,
+            bitSize      =  32,
+            bitOffset    =  0,
+            base         = pr.Int,
+            mode         = "RO",
+        ))
+
+        self.add(pr.RemoteVariable(
+            name         = "lmsA4",
+            description  = "fine delay control (307.2MHz clock)",
+            offset       =  0x024,
+            bitSize      =  32,
+            bitOffset    =  0,
+            base         = pr.Int,
+            mode         = "RO",
+        ))
+
+        self.add(pr.RemoteVariable(
+            name         = "lmsA5",
+            description  = "fine delay control (307.2MHz clock)",
+            offset       =  0x028,
+            bitSize      =  32,
+            bitOffset    =  0,
+            base         = pr.Int,
+            mode         = "RO",
+        ))
+
+        self.add(pr.RemoteVariable(
+            name         = "lmsA6",
+            description  = "fine delay control (307.2MHz clock)",
+            offset       =  0x02C,
+            bitSize      =  32,
+            bitOffset    =  0,
+            base         = pr.Int,
+            mode         = "RO",
+        ))
+
+        self.add(pr.RemoteVariable(
+            name         = "lmsA7",
+            description  = "fine delay control (307.2MHz clock)",
+            offset       =  0x030,
+            bitSize      =  32,
+            bitOffset    =  0,
+            base         = pr.Int,
+            mode         = "RO",
+        ))
+
 
 
 

@@ -47,22 +47,7 @@ function takeDebugData( rootPath, fileName, varargin )
         fullPath = fileName;
     end
 
-    switch type
-        case 'adc'
-            daqMuxChannel0 = (channel+1)*2;
-            daqMuxChannel1 = daqMuxChannel0 + 1;
-        case 'dac'
-            daqMuxChannel0 = (channel+1)*2 + 10;
-            daqMuxChannel1 = daqMuxChannel0 + 1;
-        otherwise % catch debug and errors
-            daqMuxChannel0 = 22; % +22 to set debug stream
-            daqMuxChannel1 = 23;
-    end   
-    daqMuxChannel0 
-    setBufferSize(dataLength)
-    
-    lcaPut([root,':AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]'],daqMuxChannel0)
-    lcaPut([root,':AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]'],daqMuxChannel1)
+    setupDaqMux( rootPath, type, channel, dataLength ); 
     
     disp('Data acquisiton in progress...')
     

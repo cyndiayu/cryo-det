@@ -19,13 +19,9 @@ function [data] = readAdcData( rootPath, adcNumber, varargin )
 
     C = strsplit(rootPath, ':');
     root = C{1};
-    
-    daqMuxChannel0 = (adcNumber+1)*2;
-    daqMuxChannel1 = daqMuxChannel0 + 1;
-    setBufferSize(dataLength)
-    
-    lcaPut([root,':AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]'],daqMuxChannel0)
-    lcaPut([root,':AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]'],daqMuxChannel1)
+
+    setupDaqMux( rootPath, 'adc', adcNumber, dataLength );   
+ 
     %triggerDM
     lcaPut([root, ':AMCc:FpgaTopLevel:AppTop:AppCore:CmdDacSigTrigArm'],1);
     pause(1)

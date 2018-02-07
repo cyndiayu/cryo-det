@@ -1,34 +1,43 @@
-clear;    
+% clear;  
+close all
 global DMBufferSizePV
 
-data_length=2^18;
+data_length=2^20;
 compare_length=2^14;
 N=data_length;
 tsamp=1/614.4e6; %current sample rate
 fs=1/tsamp;
 fif=450e6;
 tif=1/fif;
-Band=1;
+Band=3;
 
 
-
-takedata=0;
+% mitch - this will cause us to take data, then process
+for takedata = [1 0]
+% takedata=0;
 
 if takedata == 1
+    
+% enable tone file output
+    lcaPut(['mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:Base[0]:','waveformSelect'], 1);
+    lcaPut(['mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:Base[0]:','waveformStart'], 1);
+    
 
     
     
     %%%%Set Playback file to single tone%%%%%%
-string1='source /afs/slac.stanford.edu/g/lcls/vol9/package/pyrogue/control-server/current/setup_epics.sh';
-filedir='/afs/slac.stanford.edu/u/rl/dandvan/cryo_det/matlab/';
+string1='source /afs/slac/g/lcls/package/pyrogue/control-server/current/setup_epics.sh';
+filedir='/home/cryo/ssmith/cryo-det/software/CryoDetCmbHcd/matlab/toneFiles/';
 %filename='multitone_2MHztones_baseband16k.csv';
 
 filename='multitone_1tonehalfscale_baseband16k.csv';
-string2=['caput -S dans_epics:AMCc:FpgaTopLevel:AppTop:DacSigGen[0]:LoadCsvFile ' filedir filename]
+string2=['caput -S mitch_epics:AMCc:FpgaTopLevel:AppTop:DacSigGen[0]:CsvFilePath ' filedir filename]
 
+
+string3=['caput -S mitch_epics:AMCc:FpgaTopLevel:AppTop:DacSigGen[0]:LoadCsvFile ' filedir filename]
 
 fid = fopen('write_csv2.sh','wt');
-fprintf(fid, '%s\n%s', string1, string2);
+fprintf(fid, '%s\n%s\n%s', string1, string2, string3);
 fclose(fid);
 
 !chmod 777 write_csv2.sh
@@ -44,137 +53,139 @@ fclose(fid);
 %%%  Turn off bands not being measured %%%%%
 %     if Band==1
 %         %%%   Ch1  %%%
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch3')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch2')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','UserData')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','UserData')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch3')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch2')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','UserData')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','UserData')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','OutputOnes')
 % 
 %     elseif Band==2
 %         %%%   Ch2   %%%   
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch0')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch1')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','UserData')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','UserData')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','OutputOnes')   
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch0')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch1')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','UserData')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','UserData')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','OutputOnes')   
 % 
 % 
 %     elseif Band==3   
 %         %%%   Ch3   %%%  
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch7')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch6')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','UserData')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','UserData')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','OutputOnes')    
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch7')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch6')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','UserData')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','UserData')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','OutputOnes')    
 % 
 %     elseif Band==4
 %        %%%  Ch4 %%%  
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch4')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch5')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','OutputOnes')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','UserData')
-%        lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','UserData') 
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch4')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch5')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','OutputOnes')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','UserData')
+%        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','UserData') 
 %     end
     
 %%%%All Bands On %%%%%    
     if Band==1
         %%%   Ch1  %%%
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch3')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch2')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch3')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch2')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','UserData')
 
     elseif Band==2
         %%%   Ch2   %%%   
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch0')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch1')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch0')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch1')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','UserData')
 
 
     elseif Band==3   
         %%%   Ch3   %%%  
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch7')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch6')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','UserData')  
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch7')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch6')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','UserData')  
 
     elseif Band==4
        %%%  Ch4 %%%  
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch4')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch5')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','UserData')
-       lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch4')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch5')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','UserData')
     end 
     
     
 % For taking long data    
-rootPath = 'dans_epics';
+rootPath = 'mitch_epics';
 fileName = 'myData.dat';
-dataLength = 2^25; % max is 2^25
+dataLength = data_length; % max is 2^25
 dataType = 'adc';
 channel = 1;
-
+if exist(fileName, 'file') == 2
+    delete(fileName)
+end
 takeDebugData( rootPath, fileName, dataLength, dataType, channel )
 
 % data = processData( fileName );
@@ -189,12 +200,12 @@ takeDebugData( rootPath, fileName, dataLength, dataType, channel )
 %     time=tsamp*(0:1:data_length-1);
 
 %     setBufferSize(data_length)
-%     lcaPut('dans_epics:AMCc:FpgaTopLevel:AppTop:AppCore:CmdDacSigTrigArm',1)
+%     lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:CmdDacSigTrigArm',1)
 %     %triggerDM
 %     pause(1)
 %     stm_size = lcaGet(DMBufferSizePV);
-%     Idata=lcaGet('dans_epics:AMCc:Stream0', stm_size);
-%     Qdata=lcaGet('dans_epics:AMCc:Stream1', stm_size);
+%     Idata=lcaGet('mitch_epics:AMCc:Stream0', stm_size);
+%     Qdata=lcaGet('mitch_epics:AMCc:Stream1', stm_size);
 %     ampls=sqrt(Idata.^2 + Qdata.^2);
 
 
@@ -254,17 +265,32 @@ takeDebugData( rootPath, fileName, dataLength, dataType, channel )
 %  axis([-260 260 -130 -0])
 %  title(['Full Band Plot for Band ' num2str(Band) ' (DAC/Up/Down convert/ADC)']);
 
+% restore DSP output
+    lcaPut(['mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:Base[0]:','waveformSelect'], 0);
+    lcaPut(['mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:Base[0]:','waveformStart'], 0);
+
 end
 anadata=1;
 if anadata == 1 && takedata == 0
-    rootPath = 'dans_epics';
+    rootPath = 'mitch_epics';
     fileName = 'myData.dat';
+    if exist( fileName, 'file' ) ~= 2
+       error(['File ', fileName, ' does not exist!']) 
+    end
     dataLength = 2^25; % max is 2^25
     dataType = 'adc';
     channel = 1;
-    data = processData( fileName );
+    data = double(processData( fileName, 'int16' ));
     Idata=(data(1:end-2,1)');  %  This is a hack for JESD misalignment
     Qdata=(data(3:end,2)');
+    
+    % check for ADC saturation
+    maxI  = find(abs(Idata) >= 2^15-1);
+    maxQ  = find(abs(Qdata) >= 2^15-1);
+    if ~isempty(maxI) || ~isempty(maxQ)
+       error('ADC saturating!') 
+    end
+    
     data_length=length(Idata);
     N=data_length;    
     
@@ -338,7 +364,7 @@ if anadata == 1 && takedata == 0
     
     
     %load('multitone_2MHztones_baseband16k.mat')
-    load('multitone_1tonehalfscale_baseband16k.mat')
+    load('toneFiles/multitone_1tonehalfscale_baseband16k.mat')
     flo=freqs_actual(1)-0; %Pick any tone you like
     sig_lo=exp(1i*(2*pi*flo*time))';
     sig_multp=sig_lo.*signal;  % Downconvert
@@ -353,6 +379,7 @@ if anadata == 1 && takedata == 0
      output = filtfilt(Hd.Numerator,1,sig_multp);
     %output=sig_multp;
     plotfft(output,fs,101);
+    xlim([-2 2])
     Idatfilt=real(output);
     Qdatfilt=imag(output);
     phase=unwrap(atan2(Qdatfilt,Idatfilt));
@@ -405,4 +432,6 @@ if anadata == 1 && takedata == 0
     P_win_ch2 = abs(fft(wphase2))./pi;
     P_win_hCh2 = 2*P_win_ch2(1:length(f));
     P_win_hCh2 = P_win_hCh2 / sum(win);
+end
+
 end

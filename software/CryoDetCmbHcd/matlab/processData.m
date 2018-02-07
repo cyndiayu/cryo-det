@@ -1,7 +1,11 @@
 % Process the data from pyrogue strema interfaces
 % data is a multidimensiona matrix with the process data
 
-function data = processData(file)
+function data = processData(file, type)
+
+    if nargin < 2
+        type = 'uint32';
+    end
 
     % Number of stream channels
     numChannels = 2
@@ -11,7 +15,10 @@ function data = processData(file)
     
     % Read input file
     fileID = fopen(file,'r');
-    data = uint32(fread(fileID,'uint32','ieee-le'));
+    data = (fread(fileID,type,'ieee-le'));
+    if strcmp(type, 'uint32')
+        data = uint32(data);
+    end
     fclose(fileID);
     
     data(1:headerSize) = [];

@@ -2,7 +2,7 @@
 close all
 global DMBufferSizePV
 
-data_length=2^20;
+data_length=2^22;
 compare_length=2^14;
 N=data_length;
 tsamp=1/614.4e6; %current sample rate
@@ -149,16 +149,16 @@ fclose(fid);
         %%%   Ch3   %%%  
        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[0]','Ch7')
        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:DaqMuxV2[0]:InputMuxSel[1]','Ch6')
-       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','UserData')
-       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','UserData')
-       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','UserData')
-       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','UserData')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','OutputOnes')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','OutputOnes')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[2]','OutputOnes')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[3]','OutputOnes')
        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[4]','OutputOnes')
        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[5]','OutputOnes')   
        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[6]','UserData')
        lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[7]','UserData')
-       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','UserData')
-       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','UserData')  
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','OutputOnes')
+       lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','OutputOnes')  
 
     elseif Band==4
        %%%  Ch4 %%%  
@@ -182,7 +182,7 @@ rootPath = 'mitch_epics';
 fileName = 'myData.dat';
 dataLength = data_length; % max is 2^25
 dataType = 'adc';
-channel = 1;
+channel = Band;
 if exist(fileName, 'file') == 2
     delete(fileName)
 end
@@ -281,8 +281,14 @@ if anadata == 1 && takedata == 0
     dataType = 'adc';
     channel = 1;
     data = double(processData( fileName, 'int16' ));
-    Idata=(data(1:end-2,1)');  %  This is a hack for JESD misalignment
-    Qdata=(data(3:end,2)');
+% 
+    Qdata=(data(1:end-2,1)');  %  This is a hack for JESD misalignment
+    Idata=(data(3:end,2)');
+    
+%     
+%     Qdata=(data(1:end,1)');  %  This is a hack for JESD misalignment
+%     Idata=(data(1:end,2)');
+%     
     
     % check for ADC saturation
     maxI  = find(abs(Idata) >= 2^15-1);
@@ -290,6 +296,8 @@ if anadata == 1 && takedata == 0
     if ~isempty(maxI) || ~isempty(maxQ)
        error('ADC saturating!') 
     end
+    
+
     
     data_length=length(Idata);
     N=data_length;    

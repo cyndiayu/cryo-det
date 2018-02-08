@@ -1,7 +1,8 @@
 %% tries to find all of the resonators
 band0 = 5.25e3;
-ctime=1517519090;
-bands=0:31;
+ctime=ctimeForFile;
+%bands=0:31;
+bands=1;
 
 % sweep all bands
 [f,resp]=fullBandAmplSweep(bands,Nread,dwell,freqs)
@@ -54,5 +55,10 @@ disp(['res(MHz) = ',num2str(res)]);
 
 % save resonators to file as list, by band and Foff
 [band, Foff] = f2band(res);
-dlmwrite(fullfile(resultsDir,[num2str(ctime),'.res']),horzcat(band',Foff',res'),'delimiter','\t');
+
+% bands are interleaved, so let's sort results by frequency, not band
+results=horzcat(band',Foff',res');
+results = sortrows(results,3);
+
+dlmwrite(fullfile(resultsDir,[num2str(ctime),'.res']),double(results),'delimiter','\t','precision','%0.3f');
 

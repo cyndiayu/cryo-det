@@ -20,6 +20,7 @@ lcaPut( [rtmRootPath, 'LowCycle'],  num2str(2));
 lcaPut( [rtmRootPath, 'HighCycle'],  num2str(2)); 
 lcaPut( [rtmRootPath, 'KRelay'],  num2str(3)); 
 lcaPut( [rtmRootPath, 'RampMaxCnt'], num2str(323583));
+% % % lcaPut( [rtmRootPath, 'RampMaxCnt'], num2str(271138));
 lcaPut( [rtmRootPath, 'SelectRamp'], num2str(1));
 lcaPut( [rtmRootPath, 'EnableRamp'],  num2str(1)); 
 lcaPut( [rtmRootPath, 'RampStartMode'],  num2str(0)); 

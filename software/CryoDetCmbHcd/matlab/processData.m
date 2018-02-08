@@ -12,7 +12,7 @@ function data = processData(file, type)
     
     % Size of the header (8 bytes in 32-bit words)
     headerSize = 4;
-    
+
     % Read input file
     fileID = fopen(file,'r');
     data = (fread(fileID,type,'ieee-le'));

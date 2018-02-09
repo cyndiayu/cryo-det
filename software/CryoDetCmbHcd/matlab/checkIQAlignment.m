@@ -3,7 +3,7 @@ Fadc = 614.4e6;
 rootPath = 'mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:Base[0]:';
 
 %% What does DAC think it's putting out?
-dacNumber = 0;
+dacNumber = 3;
 dacData = readDacData( rootPath, dacNumber );
 figure
 pwelch(dacData, [], [], [], Fadc, 'centered')

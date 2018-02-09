@@ -12,6 +12,9 @@ rtmSpiRootPath = 'mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:RtmCryoDet:C_RtmS
 % before doing anything, disable the flux ramp
 lcaPut( [rtmSpiRootPath, 'Cfg_Reg_Ena Bit'],  num2str(0));
 
+
+% Need to scale flux ramp reset with carrier freq
+rampStep = 1;
 %
 % Setup the flux ramp
 
@@ -19,7 +22,7 @@ lcaPut( [rtmSpiRootPath, 'Cfg_Reg_Ena Bit'],  num2str(0));
 lcaPut( [rtmRootPath, 'LowCycle'],  num2str(2)); 
 lcaPut( [rtmRootPath, 'HighCycle'],  num2str(2)); 
 lcaPut( [rtmRootPath, 'KRelay'],  num2str(3)); 
-lcaPut( [rtmRootPath, 'RampMaxCnt'], num2str(323583));
+lcaPut( [rtmRootPath, 'RampMaxCnt'], num2str(323583/rampStep));
 % % % lcaPut( [rtmRootPath, 'RampMaxCnt'], num2str(271138));
 lcaPut( [rtmRootPath, 'SelectRamp'], num2str(1));
 lcaPut( [rtmRootPath, 'EnableRamp'],  num2str(1)); 
@@ -30,7 +33,7 @@ lcaPut( [rtmRootPath, 'DebounceWidth'],  num2str(255));
 %% set C_RtmSpiSr
 lcaPut( [rtmSpiRootPath, 'Ramp Slope'],  num2str(0));
 lcaPut( [rtmSpiRootPath, 'Mode Control'],  num2str(0));
-lcaPut( [rtmSpiRootPath, 'Fast Step Size'],  num2str(1));
+lcaPut( [rtmSpiRootPath, 'Fast Step Size'],  num2str(rampStep));
 lcaPut( [rtmSpiRootPath, 'Fast Rst Value'],  num2str(65535));
 
 % Done setting up the flux ramp

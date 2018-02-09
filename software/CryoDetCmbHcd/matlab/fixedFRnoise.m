@@ -1,26 +1,57 @@
 addpath('./glob/');
 
 path2datedirs='/data/cpu-b000-hp01/cryo_data/data2/';
+fSample=2.4e6;
 
 clear dls;
 
-%dls={{'1515691298_Ch64.dat','closed loop (f)','f'},{'1515691405_Ch64.dat','open loop (df)','df'}};
+%Imax is only used for I and Q
+%Imax=1.;
+%dls={{'1518091722_Ch496.dat','quadrature direction','adc'}};
+%dls={ ...
+%        % dataset1
+%        struct('fn','1518091859_Ch496.dat', ...
+%               'label','inphase direction', ...
+%               'type','adc', ...
+%               'Imax',318307.4857) ...
+%        % dataset2
+%        struct('fn','1518091722_Ch496.dat', ...
+%               'label','quadrature direction', ...
+%               'type','adc', ...
+%               'Imax',318307.4857), ...
+%    };
 
-% power=12, closed and open loop, first dataset with full SMuRF
-%dls={{'1516371718_Ch192.dat','closed loop (f)','f'},{'1516372733_Ch192.dat','open loop (df)','df'},{'1516372981_Ch192.dat','open loop +3.4kHz (df)','df'}};
+dls={ ...
+        % dataset1
+        %struct('fn','1518107010_Ch256.dat', ...
+        %       'label','inphase direction', ...
+        %       'type','adc', ...
+        %       'swapFdF',false, ...
+        %       'Imax',3451415.3009) ...
+% %         struct('fn','1518108523_Ch256.dat', ...
+% %                'label','quadrature direction (analysisScale=0x3)', ...
+% %                'type','adc', ...
+% %                'swapFdF',false, ...
+% %                'Imax',6901537.0756),...
+% %         struct('fn','1518107965_Ch256.dat', ...
+% %                'label','quadrature direction (analysisScale=0x0)', ...
+% %                'type','adc', ...
+% %                'swapFdF',false, ...
+% %                'Imax',1727758.3618), ...
+% %         struct('fn','1518107078_Ch256.dat', ...
+% %                'label','quadrature direction', ...
+% %                'type','adc', ...
+% %                'swapFdF',false, ...
+% %                'Imax',3451415.3009), ...
+         struct('fn','1518110654_Ch256.dat', ...
+               'label','quadrature direction', ...
+               'type','adc', ...
+               'swapFdF',false, ...
+               'Imax',1339572) ...
+    };
 
-%power=15
-%dls={{'1516373283_Ch192.dat','closed loop (f)','f'},{'1516374372_Ch192.dat','closed loop #2 (f)','f'},{'1516375222_Ch192.dat','open loop (df)','df'}};
-
-%dls={{'1517326062_Ch192.dat','2x amp, 12dB atten','df'},{'1517326152_Ch192.dat','2x amp, 22dB atten','df'},{'1517326359_Ch192.dat','2x amp, 32dB atten','df'}};
-%dls={{'1517326887_Ch192.dat','12dB out, 0dB in','df'},{'1517327058_Ch192.dat','2dB out, 10dB in','df'},{'1517327653_Ch192.dat','2dB out, 10dB in, 2xGfb','df'}};
-
-%dls={{'1517329163_Ch192.dat', '12dB out, 0dB in', 'df'},{'1517329478_Ch192.dat','9dB out, 3dB in', 'df'},{'1517330065_Ch192.dat','6dB out, 6dB in', 'df'},{'1517330340_Ch192.dat','3dB out, 9dB in', 'df'},{'1517330843_Ch192.dat','0dB out, 12dB in', 'df'}};
-
-dls={{'1517412850_Ch192.dat', 'everything on','f'},{'1517413026_Ch192.dat','- pulse tube','f'},{'1517413289_Ch192.dat','- cernoxes & diodes','f'},{'1517413428_Ch192.dat','- housekeeping (unplugged)','f'},{'1517414649_Ch192.dat','HEMT on blue boxes','f'}};
-
-%plotTitle='SWH 5.39607 GHz no TES';
-plotTitle='SWH 5.396 GHz no TES';
+plotTitle='SWH 5.22975 GHz I/Q no fridge';
+%plotTitle='CY 5.396 GHz no TES, fixed input/variable output attenuation';
 
 % auto-append date
 now=datetime('now')
@@ -30,13 +61,13 @@ clear fs dfs asds fpws;
 fs=[]; dfs=[]; asds=[]; fpws=[];
 
 ColOrd = get(gca,'ColorOrder');
-times=linspace(0,33554432/2.4e6,33554432);
+times=linspace(0,33554432/fSample,33554432);
 
 
 clear LegendString;
 LegendString = cell(1,numel(dls));
 for c=1:length(dls)
-    dfn=dls{c}{1};
+    dfn=getfield(dls{c},'fn')
     
     % need to find the file; that way we don't have to put the path above,
     % which is annoying.
@@ -51,7 +82,7 @@ for c=1:length(dls)
     [dfpath,dfname,dfext] = fileparts(dfn);
     dsnum=dfname(7:10);
     
-    dfleg=dls{c}{2};
+    dfleg=getfield(dls{c},'label');
     LegendString{c} = [dfleg ' (' dsnum ')'];
     disp([dfn ' : ' dfleg]);
     [filepath,name,ext] = fileparts(dfn)
@@ -69,18 +100,37 @@ for c=1:length(dls)
         clf;
     end
     
-    fordf=dls{c}{3};
+    swapFdF=false;
+    if(isfield(dls{c},'swapFdF'))
+        swapFdF=getfield(dls{c},'swapFdF');
+    end
+    fordf=getfield(dls{c},'type');
     % this is a kludge.
-    if fordf=='df'
+    if (strcmp(fordf,'df')||swapFdF)
         % for some reason, often have a glitch at the end of the df time
         % stream.  Truncate.
         f=df;
     end
     
+    if(strcmp(fordf,'adc'))
+        % decodeSingleChannel assumes data is frequency,
+        % so if you're trying to read ADC data directly
+        % need to undo the conversion it does
+        f=(2^23/19.2)*f;
+        df=(2^23/19.2)*f;
+    end
+    
+
+    
     % truncate by stripping off last 10 samples; for some reason a lot of
     % the time the last sample or so is a glitch for either f or df
     f=f(1:end-10);
     df=df(1:end-10);
+    
+    ph = atan2(f, ones(size(f))*dls{c}.Imax);
+    w = blackman(length(ph));
+    [pxx, ff] = pwelch(ph,w,[],[],fSample);
+
     
     subplot(length(dls),1,c);
     Col = ColOrd(c,:)
@@ -90,6 +140,9 @@ for c=1:length(dls)
     end
     %ylim(1.5*ylim);
     ylabel('\DeltaF (MHz)');
+    if strcmp(fordf,'adc')
+        ylabel('ADC counts');
+    end
     legend(dfleg);
     if c==length(dls)
         xlabel('Time (s)');
@@ -103,25 +156,39 @@ for c=1:length(dls)
         clf;
     end
     
+    % 
+    Imax=1;
+    if isfield(dls{c},'Imax')
+        Imax=getfield(dls{c},'Imax');
+    end
+    
     % w/ windowing
-    [pxxpw,fpw] = pwelch(f,2^22,2^10,2^22,2.4e6);
-    asd=sqrt(pxxpw)*1.e6; % x1e6 to convert from MHz to Hz
+    [pxxpw,fpw] = pwelch(f,2^22,2^10,2^22,fSample);
+    
+    asd=sqrt(pxxpw);
+    if strcmp(fordf,'adc')
+        asd=20.*log10(asd/Imax); % x1e6 to convert from MHz to Hz
+        semilogx(fpw,asd);
+    else %frequency data in MHz
+        asd=asd*1.e6; % x1e6 to convert from MHz to Hz
+        loglog(fpw,asd);
+    end
     
     asds(c,:)=asd; fpws(c,:)=fpw;
-    
-    loglog(fpw,asd);
+   
     if c==1
         hold on;
     end
     
     if c==length(dls)
-        xlim([1 1.2e6]);
-        ylim([1e-3 1.e4]);
-        
-        ylabel('Frequency ASD (Hz/rtHz)');
-        %ylabel('Frequency ASD (\mu\Phi_{0}/rtHz)');
-        %ylabel('Current ASD (pA/rtHz)');
+        xlim([1 fSample/2]);
         xlabel('Frequency (Hz)');
+        if strcmp(fordf,'adc')
+            ylabel('dBc/Hz');
+        else
+            ylim([1e-3 1.e4]);
+            ylabel('Frequency ASD (Hz/rtHz)');
+        end 
         
         legend(LegendString);
         title(plotTitle);
@@ -133,21 +200,31 @@ for c=1:length(dls)
     end
     
     % no windowing
-    [fpwr,pxxpwr] = psd(f,2.4e6);
-    asdr=sqrt(pxxpwr)*1.e6; % x1e6 to convert from MHz to Hz
-    loglog(fpwr,asdr);
+    [fpwr,pxxpwr] = psd(f,fSample);
+    
+    asdr=sqrt(pxxpwr);
+    if strcmp(fordf,'adc')
+        asdr=20.*log10(asdr/Imax); % x1e6 to convert from MHz to Hz
+        semilogx(fpwr,asdr);
+        semilogx(ff,10*log10(pxx));
+    else %frequency data in MHz
+        asdr=asdr*1.e6; % x1e6 to convert from MHz to Hz
+        loglog(fpwr,asdr);
+    end
+
     if c==1
         hold on;
     end
     
-    if c==length(dls)
-        xlim([1/max(times) 1.2e6]);
-        ylim([1e-3 1.e4]);
-        
-        ylabel('Frequency ASD (Hz/rtHz)');
-        %ylabel('Frequency ASD (\mu\Phi_{0}/rtHz)');
-        %ylabel('Current ASD (pA/rtHz)');
+    if c==length(dls)  
+        xlim([1 fSample/2]);
         xlabel('Frequency (Hz)');
+        if strcmp(fordf,'adc')
+            ylabel('dBc/Hz');
+        else
+            ylim([1e-3 1.e4]);
+            ylabel('Frequency ASD (Hz/rtHz)');
+        end 
         
         legend(LegendString);
         title(plotTitle);
@@ -156,7 +233,7 @@ end
 
 for c=1:length(dls)
     f=fs(c,:);
-    dfleg=dls{c}{2};
+    dfleg=getfield(dls{c},'label');
     disp(['-> ' dfleg ' : ']);
     disp(['std(f)=' num2str(std(f)*1.e6) 'Hz']);
 end

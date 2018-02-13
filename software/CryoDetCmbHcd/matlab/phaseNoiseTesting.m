@@ -20,7 +20,7 @@ dataLength = 2^22;
 
 % Setup phase noise measurement parameters
 phaseNoiseDecimation = 4;  % decimation values 4...8192 (307.2MHz/decimation)
-fullScaleDiv2        = 7;    % valid numbers 0...7, fullScale/2^fullScaleDiv2
+fullScaleDiv2        = 6;    % valid numbers 0...7, fullScale/2^fullScaleDiv2
 freqMHz              = 25;   % single tone frequency MHz
 
 
@@ -29,7 +29,7 @@ if exist( fName, 'file' )
 end
 
 readoutRate    = Fadc/(phaseNoiseDecimation*2);
-freqUint       = floor(freqMHz*2^32/(Fadc/2));
+freqUint       = floor(freqMHz*1e6*2^32/(Fadc/2));
 
 % setup complex conjugate multiply
 iqSwapOut      = 1; 

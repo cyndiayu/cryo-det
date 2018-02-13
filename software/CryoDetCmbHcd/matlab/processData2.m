@@ -24,6 +24,11 @@ function [data, header] = processData2(file, type)
         header       = data(1:2, :);
         data(1:2, :) = [];
         data         = uint32(data);
+    elseif strcmp(type, 'int32')
+        header(:,1)  = typecast(int32(data(1:2, 1)), 'uint32'); 
+        header(:,2)  = typecast(int32(data(1:2, 2)), 'uint32');
+        data(1:2, :) = [];
+        data         = double(data);
     elseif strcmp(type, 'int16')
         header1(:,1) = typecast(int16(data(1:4, 1)), 'uint16');
         header1(:,2) = typecast(int16(data(1:4, 2)), 'uint16');

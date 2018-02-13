@@ -4,8 +4,8 @@
 % phaseNoiseDecimation - decimation from 307.2MHz, values 4...8192
 %                      - phaseNoiseDecimation = 4 is 307.2MHz/4 readout rate
 %
-% phaseNoiseFreq       - uint32, 614.4MHz/2^32
-%                      - phaseNoiseFreq = 0xa6aaaaa is 25MHz
+% phaseNoiseFreq       - uint32, 307.2MHz/2^32
+%                      - phaseNoiseFreq = 0xa6aaaaa is 12.5MHz
 %
 % phaseNoiseScale      - full scale/2^phaseNoiseScale
 %                      - phaseNoiseScale = 7 is +/- 256 counts
@@ -14,12 +14,12 @@ rootPath = 'mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:Base[0]:';
 Fadc     = 614.4e6;
 
 
-fName      = 'mitchPhaseNoiseTest4.dat';
+fName      = 'mitchPhaseNoiseTest.dat';
 dataLength = 2^22;
 
 
 % Setup phase noise measurement parameters
-phaseNoiseDecimation = 128;  % decimation values 4...8192 (307.2MHz/decimation)
+phaseNoiseDecimation = 4;  % decimation values 4...8192 (307.2MHz/decimation)
 fullScaleDiv2        = 7;    % valid numbers 0...7, fullScale/2^fullScaleDiv2
 freqMHz              = 25;   % single tone frequency MHz
 
@@ -29,7 +29,7 @@ if exist( fName, 'file' )
 end
 
 readoutRate    = Fadc/(phaseNoiseDecimation*2);
-freqUint       = floor(25*2^32/614.4);
+freqUint       = floor(freqMHz*2^32/(Fadc/2));
 
 % setup complex conjugate multiply
 iqSwapOut      = 1; 

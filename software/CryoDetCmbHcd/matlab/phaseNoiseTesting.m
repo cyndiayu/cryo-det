@@ -53,8 +53,8 @@ phase = phase - mean(phase);
 t     = (1:length(phase))/readoutRate;
 
 
-w        = blackman(length(phase));
-[pxx, f] = pwelch(phase, w, [], [], readoutRate);
+w        = blackman(length(phase)/8);
+[pxx, f] = pwelch(phase, w, 0, [], readoutRate);
 pxxSSB   = pxx./2;
 
 figure; hold on;

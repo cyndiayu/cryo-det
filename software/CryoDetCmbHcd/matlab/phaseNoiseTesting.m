@@ -55,6 +55,7 @@ t     = (1:length(phase))/readoutRate;
 
 w        = blackman(length(phase));
 [pxx, f] = pwelch(phase, w, [], [], readoutRate);
+pxxSSB   = pxx./2;
 
 figure; hold on;
 plot(t, I)
@@ -70,7 +71,7 @@ xlabel('Time (sec)')
 ylabel('Phase (rad)')
 
 figure;
-semilogx(f, 10*log10(pxx))
+semilogx(f, 10*log10(pxxSSB))
 xlabel('Frequency')
 ylabel(' Power dBc/Hz')
 title('Phase noise')

@@ -1,8 +1,11 @@
+
 % s
 function setup()
-
+    try
+        lcaClear
+    catch e
+    end
     setEnv('mitch_epics')
-    lcaClear
     setDefaults
   
     root='mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:Base[0]:';

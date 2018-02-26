@@ -79,7 +79,9 @@ end
 
 
 etaRomData = zeros(1,128);
-etaRomData(1) = 2^10 + (2^10)*(2^16);
+etaRomData(1) = 2^10;
+% etaRomData(1) = etaRomData(1) + floor(0.0877*2^15)*2^16;
+etaRomData(1) = etaRomData(1) + 62662*2^16;
 
 freqRomData = zeros(1,128);
 freqRomData(1) = floor((1/38.8)*2^24) + 15*2^24;

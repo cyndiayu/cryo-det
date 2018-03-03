@@ -13,7 +13,8 @@ else
     nF=2; nDF=1;
 end
 
-rawData = squeeze(processData(file));
+%rawData = squeeze(processData(file));
+[rawData, header] = processData2(file);
 %revised processData will not need buffsize parameter, or squeeze function
 
 %decode strobes

@@ -25,12 +25,13 @@ freqCenter     = 5250;
 freqOffset = frequency;
 [band, fOff]   = f2band(freqCenter + freqOffset);
 chan           = band*16;
-fineScanRange  = 10; % scan +/- 6 degree around min response
 
 amplitude      = 10;
 feedbackEnable = 0;
 etaMag         = 1;
 i = 1;
+
+disp(['chan = ',num2str(chan)]);
 
 %%
 %% Find signal vector in eta coordinates

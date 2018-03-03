@@ -43,13 +43,22 @@ lcaPut( [rootPath, 'rfEnable'], 1 )
 % [loopFilterOutput, frequencyError] = readbackCryoChannel( rootPath, channelNum )
 [a, b] = readbackCryoChannel( rootPath, 0 )
 
+%%
+
 adcData = readAdcData( rootPath, 0 );
 dacData = readDacData( rootPath, 0 );
 
 figure
-pwelch(adcData, [], [], [], Fadc, 'centered')
+win = hanning(length(adcData)/8);
+pwelch(adcData, win, 0, [], Fadc, 'centered')
 title('ADC data PSD')
 
 figure
-pwelch(dacData, [], [], [], Fadc, 'centered')
+win = hanning(length(dacData)/8);
+pwelch(dacData, win, 0, [], Fadc, 'centered')
 title('DAC data PSD')
+
+figure
+hold on
+plot(real(dacData))
+plot(imag(dacData))

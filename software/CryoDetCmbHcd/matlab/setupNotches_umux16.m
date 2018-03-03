@@ -71,6 +71,8 @@ for ii =1:length(resonators)
     
 end
 
+%save('params.mat', stufffffffff)
+
 for ii=1:length(resonators)
     configCryoChannel(rootPath, chan(ii), offset(ii), 12, 1, etaPhaseDeg(ii), etaScaled(ii));
 end

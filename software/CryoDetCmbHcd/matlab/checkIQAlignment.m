@@ -17,3 +17,19 @@ adcData = readAdcData( rootPath , adcNumber );
 figure
 pwelch(adcData, [], [], [], Fadc, 'centered')
 title('ADC data PSD')
+
+% save data
+ctime=ctimeForFile();
+filename=num2str(ctime);
+datadir=dataDirFromCtime(ctime);
+
+adcDataFile=fullfile(datadir,[filename '_adc.mat']);
+dacDataFile=fullfile(datadir,[filename '_dac.mat']);
+
+save(adcDataFile,'adcData');
+save(dacDataFile,'dacData');
+
+disp(['adcDataFile=' adcDataFile]);
+disp(['dacDataFile=' dacDataFile]);
+    
+

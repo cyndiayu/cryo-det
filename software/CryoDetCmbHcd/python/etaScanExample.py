@@ -15,7 +15,7 @@ freqs = numpy.arange( -0.3, 0.3, 0.01 )
 band  = 0
 ampl  = 10
 
-etaScanFreqs.put( freq )
+etaScanFreqs.put( freqs )
 etaScanAmpl.put( ampl )
 etaScanBand.put( band )
 etaScanStart.put( 1 )

@@ -32,16 +32,16 @@ function setup( band )
     for i = 0:3
         if i == band
             % leave this one on
-        else
+       else
             pv = sprintf('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:MicrowaveMuxCore[0]:PLL[%i]:REG[4]', i);
-            lcaPut(pv, hex2dec('30008BC4'));
+           lcaPut(pv, hex2dec('30008BC4'));
         end
     end
 
 % enable DAC, PLL, map ADC for a particular band
     root='mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:CryoAdcMux[0]:';
     switch band
-
+        
         case 0
             %%%   Ch1  4-4.5GHz %%%
             lcaPut([root,'ChRemap[0]'] , num2str(2));
@@ -57,6 +57,9 @@ function setup( band )
             lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[0]','UserData')
             lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[1]','UserData')
 %             lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:MicrowaveMuxCore[0]:PLL[1]:REG[4]',hex2dec('30008B84'))
+            % I/Q on ADC input swapped for this band!
+            lcaPut(['mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:Base[0]:','iqSwapIn'], num2str(0));
+
 
         case 2
             %%%   Ch3 5-5.5GHz   %%%
@@ -73,7 +76,9 @@ function setup( band )
             lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[8]','UserData')
             lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppTopJesd[0]:JesdTx:dataOutMux[9]','UserData')
 %             lcaPut('mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:MicrowaveMuxCore[0]:PLL[3]:REG[4]',hex2dec('30008B84'))
-
+            % I/Q on ADC input swapped for this band!
+            lcaPut(['mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:Base[0]:','iqSwapIn'], num2str(0));
+            
         otherwise  % default
             %%%   Ch3 5-5.5GHz   %%%
             lcaPut([root,'ChRemap[0]'] , num2str(6));

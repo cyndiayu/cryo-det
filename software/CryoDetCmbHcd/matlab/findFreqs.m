@@ -1,11 +1,14 @@
 %% tries to find all of the resonators
+
+% System has 8 500MHz bands, centered on 8 different frequencies.
+% All of our testing so far has been on the band centered at 5.25GHz.
 band0 = 5.25e3;
 ctime=ctimeForFile;
-%bands=0:31;
-bands=1;
+%bands=0:1;
+bands=0:31;
 
 % sweep all bands
-[f,resp]=fullBandAmplSweep(bands,Nread,dwell,freqs)
+[f,resp]=fullBandAmplSweep(bands);
 
 % plot
 figure

@@ -1,9 +1,15 @@
 addpath('./glob/');
 
+close all;
+
 path2datedirs='/data/cpu-b000-hp01/cryo_data/data2/';
 fSample=2.4e6;
 
 clear dls;
+
+% right now this is too slow, but Steve is working on a faster version
+videoAvg=false;
+videoAvgM=20;
 
 %Imax is only used for I and Q
 %Imax=1.;
@@ -23,6 +29,14 @@ clear dls;
 
 dls={ ...
         % dataset1
+        %struct('fn','1519171138_Ch64.dat', ...
+        %       'label','open loop, refPhaseDelay=0x5', ...
+        %       'type','f', ...
+        %       'swapFdF',false, 'medFilterN',3, 'alpha',0.5) ...
+        %struct('fn','1519170718_Ch64.dat', ...
+        %       'label','closed loop, refPhaseDelay=0x5', ...
+        %       'type','f', ...
+        %       'swapFdF',true, 'medFilterN',3, 'alpha',0.5) ...
         %struct('fn','1518107010_Ch256.dat', ...
         %       'label','inphase direction', ...
         %       'type','adc', ...
@@ -43,14 +57,51 @@ dls={ ...
 % %                'type','adc', ...
 % %                'swapFdF',false, ...
 % %                'Imax',3451415.3009), ...
-         struct('fn','1518110654_Ch256.dat', ...
-               'label','quadrature direction', ...
+         %struct('fn','1518210585_Ch256.dat', ...
+         %      'label','DSP quadrature', ...
+         %      'type','adc', ...
+         %      'swapFdF',false, ...
+         %      'Imax',5261193.0746, ...
+         %      'medFilterN',3, ...
+         %      'alpha',0.5), ...
+         %struct('fn','1518210661_Ch256.dat', ...
+         %      'label','DSP inphase', ...
+         %      'type','adc', ...
+         %      'swapFdF',false, ...
+         %      'Imax',5261193.0746, ...
+         %      'medFilterN',3, ...
+         %      'alpha',0.5) ...
+         struct('fn','1519212960_Ch416.dat', ...
+               'label','DSP inphase', ...
                'type','adc', ...
                'swapFdF',false, ...
-               'Imax',1339572) ...
+               'Imax',632740.385, ...
+               'medFilterN',3, ...
+               'alpha',0.5) ...
+         struct('fn','1519212895_Ch416.dat', ...
+               'label','DSP quadrature', ...
+               'type','adc', ...
+               'swapFdF',false, ...
+               'Imax',632740.385, ...
+               'medFilterN',3, ...
+               'alpha',0.5) ...
     };
 
-plotTitle='SWH 5.22975 GHz I/Q no fridge';
+dlb={ %struct('fn','1518178932_lb_dBcHz.mat', ...
+      %       'label','dan loopback thru fridge', ... 
+      %       'medFilterN', 11, ...
+      %       'alpha',0.75) ...
+      %struct('fn','1518212232_lb_dBcHz.mat', ...
+      %       'label','dan loopback thru fridge w/ DSP tone gen', ... 
+      %       'medFilterN', 11, ...
+      %       'alpha',0.75) ...
+             };
+
+%plotTitle='SWH 5085.5649MHz  thru fridge +1.5MHz off resonance';
+fres=5039.8148;
+%plot_details='on resonance';
+plot_details='+1.5MHz off resonance'; fres=fres+1.5;
+plotTitle=['SWH ',sprintf('%0.3f',fres),'MHz ',plot_details];
 %plotTitle='CY 5.396 GHz no TES, fixed input/variable output attenuation';
 
 % auto-append date
@@ -63,9 +114,10 @@ fs=[]; dfs=[]; asds=[]; fpws=[];
 ColOrd = get(gca,'ColorOrder');
 times=linspace(0,33554432/fSample,33554432);
 
-
+curr_plt=[];
 clear LegendString;
-LegendString = cell(1,numel(dls));
+LegendString = cell(1,numel(dls)+numel(dlb));
+legendCounter=1;
 for c=1:length(dls)
     dfn=getfield(dls{c},'fn')
     
@@ -83,7 +135,6 @@ for c=1:length(dls)
     dsnum=dfname(7:10);
     
     dfleg=getfield(dls{c},'label');
-    LegendString{c} = [dfleg ' (' dsnum ')'];
     disp([dfn ' : ' dfleg]);
     [filepath,name,ext] = fileparts(dfn)
     
@@ -107,8 +158,6 @@ for c=1:length(dls)
     fordf=getfield(dls{c},'type');
     % this is a kludge.
     if (strcmp(fordf,'df')||swapFdF)
-        % for some reason, often have a glitch at the end of the df time
-        % stream.  Truncate.
         f=df;
     end
     
@@ -120,23 +169,24 @@ for c=1:length(dls)
         df=(2^23/19.2)*f;
     end
     
-
-    
     % truncate by stripping off last 10 samples; for some reason a lot of
     % the time the last sample or so is a glitch for either f or df
     f=f(1:end-10);
     df=df(1:end-10);
-    
-    ph = atan2(f, ones(size(f))*dls{c}.Imax);
-    w = blackman(length(ph));
-    [pxx, ff] = pwelch(ph,w,[],[],fSample);
 
+    % subtract off mean from f/df
+    f=f-mean(f);
+    df=df-mean(df);
+    
+    %ph = atan2(f, ones(size(f))*dls{c}.Imax);
+    %w = blackman(length(ph));
+    %[pxx, ff] = pwelch(ph,w,[],[],fSample);
     
     subplot(length(dls),1,c);
     Col = ColOrd(c,:)
     plot(times(1:length(f)),f,'Color',Col);
     if c==1
-        title(plotTitle);
+        title(plotTitle,'FontSize',8);
     end
     %ylim(1.5*ylim);
     ylabel('\DeltaF (MHz)');
@@ -154,25 +204,82 @@ for c=1:length(dls)
     figure(2);
     if c==1
         clf;
+        %% plot power spectra on same axis from Dan's loopback script
+        for jj=1:length(dlb)
+            % optionally plot data from other files 
+            flbn=getfield(dlb{jj},'fn')
+            flbn_cands=glob(fullfile(path2datedirs,'/*/',flbn));
+            % don't take the one that's in the soft-linked current_data directory
+            flbnIdxC=strfind(flbn_cands,'/current_data/');
+            flbnIdx=find(cellfun('isempty',flbnIdxC));
+            flbn=flbn_cands(flbnIdx);
+            flbn=flbn{1,1}; % not sure why this is necessary
+            disp(['-> found ' flbn]);
+            
+            [dlbpath,dlbname,dlbext] = fileparts(flbn);
+            dlbnum=dlbname(7:10);
+            
+            dlbleg=getfield(dlb{jj},'label');
+            LegendString{legendCounter} = [dlbleg ' (' dlbnum ')'];
+            legendCounter=legendCounter+1;
+            
+            %Scale by pi radians for dBCrad
+            S=load(flbn,'f','dBcHz');
+            dBcHz=S.dBcHz;
+            if isfield(dlb{jj},'medFilterN')
+                mf1N=getfield(dlb{jj},'medFilterN');
+                dBcHz=medfilt1(dBcHz,mf1N);
+                LegendString{legendCounter-1} = [LegendString{legendCounter-1},' mf1N=',num2str(mf1N)];
+            end
+            curr_plt=semilogx(S.f, dBcHz); %scaling effective noise floor by bucket size (however, will scale spurs improperly)
+            hold on;
+            
+            if isfield(dlb{jj},'alpha')
+                alpha=getfield(dlb{jj},'alpha');
+                curr_plt.Color(4)=alpha;
+            end     
+        end
+        %% done plotting power spectra on same axis from Dan's loopback script
     end
-    
+
     % 
     Imax=1;
     if isfield(dls{c},'Imax')
         Imax=getfield(dls{c},'Imax');
     end
     
+    % legend for upcoming dls plot
+    LegendString{legendCounter} = [dfleg ' (' dsnum ')'];
+    legendCounter=legendCounter+1;
+    
     % w/ windowing
     [pxxpw,fpw] = pwelch(f,2^22,2^10,2^22,fSample);
     
     asd=sqrt(pxxpw);
+    
+    if videoAvg
+        asd=videoAverage(asd,videoAvgM);
+    end
+    
+    if isfield(dls{c},'medFilterN')
+        mf1N=getfield(dls{c},'medFilterN');
+        asd=medfilt1(asd,mf1N);
+        LegendString{legendCounter-1} = [LegendString{legendCounter-1},' mf1N=',num2str(mf1N)];
+    end
+    
     if strcmp(fordf,'adc')
         asd=20.*log10(asd/Imax); % x1e6 to convert from MHz to Hz
-        semilogx(fpw,asd);
+        curr_plt=semilogx(fpw,asd);
+        
     else %frequency data in MHz
         asd=asd*1.e6; % x1e6 to convert from MHz to Hz
-        loglog(fpw,asd);
+        curr_plt=loglog(fpw,asd);
     end
+    
+    if isfield(dls{c},'alpha')
+        alpha=getfield(dls{c},'alpha');
+        curr_plt.Color(4)=alpha;
+    end  
     
     asds(c,:)=asd; fpws(c,:)=fpw;
    
@@ -185,13 +292,16 @@ for c=1:length(dls)
         xlabel('Frequency (Hz)');
         if strcmp(fordf,'adc')
             ylabel('dBc/Hz');
+            ylim([-120,-50]);
         else
             ylim([1e-3 1.e4]);
             ylabel('Frequency ASD (Hz/rtHz)');
         end 
+        grid on;
+        grid minor;
         
         legend(LegendString);
-        title(plotTitle);
+        title(plotTitle,'FontSize',8);
     end
     
     figure(3);
@@ -203,14 +313,28 @@ for c=1:length(dls)
     [fpwr,pxxpwr] = psd(f,fSample);
     
     asdr=sqrt(pxxpwr);
+    
+    if videoAvg
+        asdr=videoAverage(asdr,videoAvgM);
+    end
+
+    if isfield(dls{c},'medFilterN')
+        asd=medfilt1(asd,getfield(dls{c},'medFilterN'));
+    end
+    
     if strcmp(fordf,'adc')
         asdr=20.*log10(asdr/Imax); % x1e6 to convert from MHz to Hz
-        semilogx(fpwr,asdr);
-        semilogx(ff,10*log10(pxx));
+        curr_plt=semilogx(fpwr,asdr);
+        %semilogx(ff,10*log10(pxx));
     else %frequency data in MHz
         asdr=asdr*1.e6; % x1e6 to convert from MHz to Hz
-        loglog(fpwr,asdr);
+        curr_plt=loglog(fpwr,asdr);
     end
+    
+    if isfield(dls{c},'alpha')
+        alpha=getfield(dls{c},'alpha');
+        curr_plt.Color(4)=alpha;
+    end  
 
     if c==1
         hold on;
@@ -225,9 +349,11 @@ for c=1:length(dls)
             ylim([1e-3 1.e4]);
             ylabel('Frequency ASD (Hz/rtHz)');
         end 
+        grid on;
+        grid minor;
         
         legend(LegendString);
-        title(plotTitle);
+        title(plotTitle,'FontSize',8);
     end
 end
 

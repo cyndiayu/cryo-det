@@ -11,7 +11,7 @@ function chan = setupNotches_umux16_singletone(rootPath,Adrive,resonators)
 
     if nargin < 3
         % no TES
-        resonators=[5395.866];
+        resonators=[5395.7396];
 
         % TES
         %resonators=[5310.60];
@@ -43,6 +43,7 @@ function chan = setupNotches_umux16_singletone(rootPath,Adrive,resonators)
         display('_________________________________________________')
         display(['Calibrate line at RF = ' num2str(res) ' MHz  IF = ' num2str(res - 5250 + 750) ' Mhz'])
         [band, Foff] = f2band(res)    ;
+        disp(['band=',num2str(band)]);
         Foff
     
         % track the number of channels in the band

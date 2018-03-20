@@ -1,4 +1,4 @@
-function [eta, F0, latency, resp, f] = etaEstimator(band, freqs, Adrive)
+function [eta, F0, latency, resp, f] = etaEstimator(band, freqs, Adrive, delF)
 %sweep frequencies in a band,
 % aquire complex repsonse vs frequency at dF block where eta is used
 % fit to dF/dS21 to estimate eta
@@ -10,9 +10,12 @@ if nargin <3
     Adrive = 12; %default -6dB
 end; 
 
+if nargin <4 
+    delF = 0.05; %default 50kHz
+end; 
+
 Nread = 1   ;    %normally run with Nread>=4
 dwell = 0.07;
-delF = 0.05;
 
 eta = 0;
 F0 = 0; 

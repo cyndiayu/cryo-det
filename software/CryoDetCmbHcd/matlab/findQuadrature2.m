@@ -10,7 +10,7 @@
 %
 
 
-function [quadraturePhase, Imax] = findQuadrature2( rootPath, frequency, which, Npts )
+function [qPhase, Imax] = findQuadrature2( rootPath, frequency, which, Npts, Adrive, freqCenter )
 
 if nargin <3
     which=0;
@@ -20,24 +20,31 @@ if nargin <4
     Npts=1000;
 end
 
-freqCenter     = 5250;
+if nargin <5
+    Adrive=10;
+end
+
+if nargin <6
+    freqCenter     = 5250;
+end
+
 % freqOffset     = -20.25;
 freqOffset = frequency;
-[band, fOff]   = f2band(freqCenter + freqOffset);
+[band, fOff]   = f2band(freqCenter + freqOffset,freqCenter);
 chan           = band*16;
-fineScanRange  = 10; % scan +/- 6 degree around min response
 
-amplitude      = 10;
 feedbackEnable = 0;
 etaMag         = 1;
 i = 1;
+
+disp(['chan = ',num2str(chan)]);
 
 %%
 %% Find signal vector in eta coordinates
 
 % Find component at etaPhase=0
 etaPhase=0;
-configCryoChannel( rootPath, chan, fOff, amplitude, feedbackEnable, etaPhase, etaMag );
+configCryoChannel( rootPath, chan, fOff, Adrive, feedbackEnable, etaPhase, etaMag );
 pause(0.1);
 
 adc0=zeros(1,Npts);
@@ -49,7 +56,7 @@ disp( ['Median ADC count for etaPhase=',num2str(etaPhase),' is (Npts=', num2str(
 
 % Find component at etaPhase=90
 etaPhase=90;
-configCryoChannel( rootPath, chan, fOff, amplitude, feedbackEnable, etaPhase, etaMag );
+configCryoChannel( rootPath, chan, fOff, Adrive, feedbackEnable, etaPhase, etaMag );
 pause(0.1);
 
 adc90=zeros(1,Npts);
@@ -85,10 +92,12 @@ Imax=sqrt( power(median(adc90),2) + power(median(adc0),2) );
 disp( ['Quadrature phase is: ' num2str(quadraturePhaseDeg), ' degrees'] )
 disp( ['Inphase magnitude response is: ', num2str(Imax)] )
 
+qPhase=quadraturePhaseDeg;
+
 %% Set to quadrature and confirm
 % set channel to quadrature direction found above
 disp( '-> Setting to point in the quadrature direction ...' );
-configCryoChannel( rootPath, chan, fOff, amplitude, feedbackEnable, newEtaPhase, etaMag );
+configCryoChannel( rootPath, chan, fOff, Adrive, feedbackEnable, newEtaPhase, etaMag );
 pause(0.1);
 
 % take some adc samples in the quadrature direction to confirm

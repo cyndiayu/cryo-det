@@ -4,7 +4,7 @@ import numpy
 rootPath     = 'mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:Base[0]:CryoChannels:'
 etaScanFreqs = epics.PV( rootPath + 'etaScanFreqs' )
 etaScanAmpl  = epics.PV( rootPath + 'etaScanAmplitude' )
-etaScanBand  = epics.PV( rootPath + 'etaScanBand' )
+etaScanChannel  = epics.PV( rootPath + 'etaScanChannel' )
 etaScanStart = epics.PV( rootPath + 'runEtaScan' )
 
 etaScanResultsI = epics.PV( rootPath + 'etaScanResultsReal' )
@@ -17,7 +17,7 @@ ampl  = 10
 
 etaScanFreqs.put( freqs )
 etaScanAmpl.put( ampl )
-etaScanBand.put( band )
+etaScanChannel.put( band )
 etaScanStart.put( 1 )
 
 i = etaScanResultsI.get( len( freqs ) )

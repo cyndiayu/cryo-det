@@ -40,5 +40,11 @@ function [data, header] = processData2(file, type)
     end
     
 
+    if header(2,2) == 0
+       % do nothing 
+    else
+        header = fliplr(header);
+        data   = fliplr(data);
+    end
 
 end

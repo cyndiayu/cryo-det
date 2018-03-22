@@ -15,13 +15,13 @@ if nargin <4
 end; 
 
 Nread = 1   ;    %normally run with Nread>=4
-dwell = 0.07;
 
 eta = 0;
 F0 = 0; 
 latency = 0;
 
-[resp, f] = etaScan(band, freqs, Nread, dwell, Adrive);
+%dwell = 0.07; [resp, f] = etaScan(band, freqs, Nread, dwell, Adrive);
+dwell = 0.0; [resp, f] = etaScan2(band, freqs, Nread, dwell, Adrive);
 
 figure;
 %assume higher level code has established a figure or we create a new one
@@ -69,7 +69,8 @@ plot(eta*resp(idx),'r*')
 plot(eta*resp(right), 'g+')
 plot(eta*resp(left), 'gx')
 
-end                      % end of function etaEstimator
+end
+% end of function etaEstimator
 
 
 %_________________________________________________________________________
@@ -182,3 +183,106 @@ resp = respI + 1i*respQ;    %form complex response
 Adrive = 0; % turn channel OFF
 configCryoChannel( rootPath, subchan, freqs(j), Adrive, 0, 0, 0 ) ;
 end
+
+
+%_________________________________________________________________________
+% subfunction etaScan2
+
+function [resp, f] = etaScan2(band, freqs, Nread, dwell, Adrive)
+% Faster version of etaScan based on PVs Mitch added to pyrogue
+% Can't implement until we've worked some bugs out of new pyrogue...
+% SWH 21Mar2018
+
+rootPath = 'mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:Base[0]:CryoChannels:';
+
+if nargin <3 
+    Nread = 2; % default number of reads per frequnecy setting
+end; 
+
+if nargin <4 
+    dwell = 0.001; %dwell time default is 1 ms
+end; 
+
+f=repelem(freqs,Nread);
+%
+%if length(repfreqs)>1
+%    error(sprintf('!!! Error in etaScan2: asked for %d freqs in scan; must be less than 1000',length(repfreqs)))
+%end
+%%
+
+subchan = 16*band;
+lcaPut([rootPath,'etaScanFreqs'],f);
+lcaPut([rootPath,'etaScanAmplitude'],Adrive);
+lcaPut([rootPath,'etaScanChannel'],subchan);
+lcaPut([rootPath,'etaScanDwell'],dwell);
+
+% run the etaScan
+lcaPut([rootPath,'runEtaScan'],1);
+
+%% SHOULD MONITOR RESULTS INSTEAD OF ETASCANINPROGRESS PV TO DETERMINE WHEN ETASCAN COMPLETES
+%% Monitor etaScanInProgress register to figure out when scan on this channel is complete.
+%% This is not the best way of doing this, probably; Mitch suggests monitoring the results
+%% instead of this etaScanInProgressRegister.  For ex. the below will fail if the monitor
+%% doesn't overlap with the duration of the scan (since it requires that at some point
+%% during monitoring, etaScanInProgress was =1.
+etaScanInProgress=false;
+etaScanProgressPV='mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:Base[0]:CryoChannels:etaScanInProgress';
+% Set a monitor
+lcaSetMonitor(etaScanProgressPV);
+val0=lcaGet(etaScanProgressPV);
+
+disp('-> Waiting for etaScan to start...');
+
+% check if etaScan has already started or not
+if val0==1
+    etaScanInProgress=true;
+    disp('-> etaScan started.');
+end 
+while true
+    try lcaNewMonitorWait(etaScanProgressPV)
+        val=lcaGet(etaScanProgressPV);
+    catch
+        errs = lcaLastError();
+        handleErrors(errs);
+    end
+    % need to make sure etaScan was actually started before 
+    % looking for its end
+	if val==1
+        etaScanInProgress=true;
+        disp('-> etaScan started.');
+    end
+    % scan is complete if the monitor saw that it was running
+    % (etaScanInProgress=1 while monitor was running) and
+    % etaScanInProgress has subsequently been toggled low.
+    if val==0 && etaScanInProgress
+        disp('-> etaScan completed.');
+        break;
+    end
+end
+
+% Clear the monitor
+lcaClear(etaScanProgressPV);
+%% Done monitoring etaScanInProgress to determine when scan on this channel is complete
+
+I=lcaGet([rootPath,'etaScanResultsReal'],length(f));
+Q=lcaGet([rootPath,'etaScanResultsImag'],length(f));
+
+if I >= 2^23
+   I  = I-2^24;   %treat as signed 24 bit
+end
+
+if Q >= 2^23
+   Q  = Q-2^24;   %treat as signed 24 bit
+end
+
+I = I/2^23;
+Q = Q/2^23;
+
+resp = I + 1i*Q;    %form complex response
+
+Adrive = 0; % turn channel OFF
+rootPath = 'mitch_epics:AMCc:FpgaTopLevel:AppTop:AppCore:SysgenCryo:Base[0]:';
+configCryoChannel( rootPath, subchan, freqs(ceil(end/2)), Adrive, 0, 0, 0 ) ;
+
+end
+% end of function etaScan2

@@ -719,7 +719,7 @@ class SysgenCryo(pr.Device):
         # Devices
         ##############################
         for i in range(numberPairs):
-            if ( i<2 ) and ( i>=0) :
+            if ( 2 <= i <= 3) :
                 self.add(CryoFreqBand(
                     name   = ('Base[%d]'%i),
                     offset = (i*0x00100000),

@@ -184,8 +184,8 @@ begin
 
    DAC_HACK : -- tie all DAC to DAC0 output
    for i in 3 downto 0 generate
-       dacValues(0, (2*i))   <= s_dacValues(0, 0);
-       dacValues(0, (2*i)+1) <= s_dacValues(0, 1);
+       dacValues(0, (2*i))   <= s_dacValues(0, (2*i));
+       dacValues(0, (2*i)+1) <= s_dacValues(0, (2*i+1));
 
        dacValues(1, (2*i))   <= s_dacValues(0, 0);
        dacValues(1, (2*i)+1) <= s_dacValues(0, 1);
